@@ -33,20 +33,20 @@ class SettingsValues(
 
     // From configuration:
     val mHasHardwareKeyboard: Boolean =
-        Settings.Companion.readHasHardwareKeyboard(res.configuration)
+        Settings.readHasHardwareKeyboard(res.configuration)
     val mDisplayOrientation: Int
     // From preferences, in the same order as xml/prefs.xml:
 
     // Get the settings preferences
-    val mAutoCap: Boolean = prefs.getBoolean(Settings.Companion.PREF_AUTO_CAP, true)
-    val mVibrateOn: Boolean = Settings.Companion.readVibrationEnabled(prefs, res)
-    val mSoundOn: Boolean = Settings.Companion.readKeypressSoundEnabled(prefs, res)
-    val mKeyPreviewPopupOn: Boolean = Settings.Companion.readKeyPreviewPopupEnabled(prefs, res)
-    val mShowsLanguageSwitchKey: Boolean = Settings.Companion.readShowLanguageSwitchKey(prefs)
-    val mImeSwitchEnabled: Boolean = Settings.Companion.readEnableImeSwitch(prefs)
+    val mAutoCap: Boolean = prefs.getBoolean(Settings.PREF_AUTO_CAP, true)
+    val mVibrateOn: Boolean = Settings.readVibrationEnabled(prefs, res)
+    val mSoundOn: Boolean = Settings.readKeypressSoundEnabled(prefs, res)
+    val mKeyPreviewPopupOn: Boolean = Settings.readKeyPreviewPopupEnabled(prefs, res)
+    val mShowsLanguageSwitchKey: Boolean = Settings.readShowLanguageSwitchKey(prefs)
+    val mImeSwitchEnabled: Boolean = Settings.readEnableImeSwitch(prefs)
 
     // Compute other readable settings
-    val mKeyLongpressTimeout: Int = Settings.Companion.readKeyLongpressTimeout(prefs, res)
+    val mKeyLongpressTimeout: Int = Settings.readKeyLongpressTimeout(prefs, res)
     val mHideSpecialChars: Boolean
     val mShowNumberRow: Boolean
     val mSpaceSwipeEnabled: Boolean
@@ -60,8 +60,8 @@ class SettingsValues(
 
     // Deduced settings
     val mKeypressVibrationDuration: Int =
-        Settings.Companion.readKeypressVibrationDuration(prefs, res)
-    val mKeypressSoundVolume: Float = Settings.Companion.readKeypressSoundVolume(prefs, res)
+        Settings.readKeypressVibrationDuration(prefs, res)
+    val mKeypressSoundVolume: Float = Settings.readKeypressSoundVolume(prefs, res)
     val mKeyPreviewPopupDismissDelay: Int =
         res.getInteger(R.integer.config_key_preview_linger_timeout)
 
@@ -71,14 +71,14 @@ class SettingsValues(
     val mBottomOffsetPortrait: Int
 
     init {
-        mKeyboardHeightScale = Settings.Companion.readKeyboardHeight(prefs, DEFAULT_SIZE_SCALE)
-        mBottomOffsetPortrait = Settings.Companion.readBottomOffsetPortrait(prefs)
+        mKeyboardHeightScale = Settings.readKeyboardHeight(prefs, DEFAULT_SIZE_SCALE)
+        mBottomOffsetPortrait = Settings.readBottomOffsetPortrait(prefs)
         mDisplayOrientation = res.configuration.orientation
-        mHideSpecialChars = Settings.Companion.readHideSpecialChars(prefs)
-        mShowNumberRow = Settings.Companion.readShowNumberRow(prefs)
-        mSpaceSwipeEnabled = Settings.Companion.readSpaceSwipeEnabled(prefs)
-        mDeleteSwipeEnabled = Settings.Companion.readDeleteSwipeEnabled(prefs)
-        mUseMatchingNavbarColor = Settings.Companion.readUseMatchingNavbarColor(prefs)
+        mHideSpecialChars = Settings.readHideSpecialChars(prefs)
+        mShowNumberRow = Settings.readShowNumberRow(prefs)
+        mSpaceSwipeEnabled = Settings.readSpaceSwipeEnabled(prefs)
+        mDeleteSwipeEnabled = Settings.readDeleteSwipeEnabled(prefs)
+        mUseMatchingNavbarColor = Settings.readUseMatchingNavbarColor(prefs)
     }
 
     fun isWordSeparator(code: Int): Boolean {

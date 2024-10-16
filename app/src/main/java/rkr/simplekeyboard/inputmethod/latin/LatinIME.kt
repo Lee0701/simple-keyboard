@@ -221,7 +221,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
 
         fun onStartInputView(editorInfo: EditorInfo?, restarting: Boolean) {
             if (hasMessages(MSG_PENDING_IMS_CALLBACK)
-                && KeyboardId.Companion.equivalentEditorInfoForKeyboard(
+                && KeyboardId.equivalentEditorInfoForKeyboard(
                     editorInfo,
                     mAppliedEditorInfo
                 )
@@ -289,13 +289,13 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
     }
 
     override fun onCreate() {
-        Settings.Companion.init(this)
+        Settings.init(this)
         DebugFlags.init(PreferenceManagerCompat.getDeviceSharedPreferences(this))
-        RichInputMethodManager.Companion.init(this)
-        mRichImm = RichInputMethodManager.Companion.getInstance()
+        RichInputMethodManager.init(this)
+        mRichImm = RichInputMethodManager.instance
         mRichImm!!.setSubtypeChangeHandler(this)
-        KeyboardSwitcher.Companion.init(this)
-        AudioAndHapticFeedbackManager.Companion.init(this)
+        KeyboardSwitcher.init(this)
+        AudioAndHapticFeedbackManager.init(this)
         super.onCreate()
 
         mHandler.onCreate()
@@ -311,12 +311,12 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
     }
 
     private fun loadSettings() {
-        currentLayoutLocale = mRichImm.getCurrentSubtype().localeObject
+        currentLayoutLocale = mRichImm?.currentSubtype?.localeObject
         val editorInfo: EditorInfo = currentInputEditorInfo
         val inputAttributes: InputAttributes = InputAttributes(editorInfo, isFullscreenMode)
         mSettings.loadSettings(inputAttributes)
         val currentSettingsValues: SettingsValues? = mSettings.current
-        AudioAndHapticFeedbackManager.Companion.getInstance()
+        AudioAndHapticFeedbackManager.instance
             .onSettingsChanged(currentSettingsValues)
     }
 
@@ -328,7 +328,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
 
     private val isImeSuppressedByHardwareKeyboard: Boolean
         get() {
-            val switcher: KeyboardSwitcher = KeyboardSwitcher.Companion.getInstance()
+            val switcher: KeyboardSwitcher = KeyboardSwitcher.instance
             return !onEvaluateInputViewShown() && switcher.isImeSuppressedByHardwareKeyboard(
                 mSettings.current, switcher.keyboardSwitchState
             )
@@ -336,7 +336,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
 
     override fun onConfigurationChanged(conf: Configuration) {
         val settingsValues: SettingsValues? = mSettings.current
-        if (settingsValues!!.mHasHardwareKeyboard != Settings.Companion.readHasHardwareKeyboard(conf)) {
+        if (settingsValues!!.mHasHardwareKeyboard != Settings.readHasHardwareKeyboard(conf)) {
             // If the state of having a hardware keyboard changed, then we want to reload the
             // settings to adjust for that.
             // TODO: we should probably do this unconditionally here, rather than only when we
@@ -646,7 +646,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
             return false
         }
         // Reread resource value here, because this method is called by the framework as needed.
-        val isFullscreenModeAllowed: Boolean = Settings.Companion.readUseFullscreenMode(
+        val isFullscreenModeAllowed: Boolean = Settings.readUseFullscreenMode(
             resources
         )
         if (super.onEvaluateFullscreenMode() && isFullscreenModeAllowed) {
@@ -693,7 +693,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
     val currentAutoCapsState: Int
         get() = mInputLogic.getCurrentAutoCapsState(
             mSettings.current,
-            mRichImm.getCurrentSubtype().keyboardLayoutSet
+            mRichImm?.currentSubtype?.keyboardLayoutSet!!
         )
 
     val currentRecapitalizeState: Int
@@ -714,7 +714,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
         }
         mOptionsDialog = mRichImm!!.showSubtypePicker(
             this,
-            mKeyboardSwitcher.mainKeyboardView.windowToken, this
+            mKeyboardSwitcher.mainKeyboardView?.windowToken, this
         )
         return mOptionsDialog != null
     }
@@ -819,7 +819,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
     override fun onTextInput(rawText: String?) {
         // TODO: have the keyboard pass the correct key code when we need it.
         val event: Event =
-            Event.Companion.createSoftwareTextEvent(rawText, Constants.CODE_OUTPUT_TEXT)
+            Event.createSoftwareTextEvent(rawText, Constants.CODE_OUTPUT_TEXT)
         val completeInputTransaction: InputTransaction =
             mInputLogic.onTextInput(mSettings.current, event)
         updateStateAfterInputTransaction(completeInputTransaction)
@@ -845,7 +845,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
         if (mKeyboardSwitcher.mainKeyboardView != null) {
             // Reload keyboard because the current language has been changed.
             mKeyboardSwitcher.loadKeyboard(
-                currentInputEditorInfo, mSettings.current,
+                currentInputEditorInfo, mSettings.current!!,
                 currentAutoCapsState, currentRecapitalizeState
             )
         }
@@ -859,8 +859,8 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
      */
     private fun updateStateAfterInputTransaction(inputTransaction: InputTransaction) {
         when (inputTransaction.requiredShiftUpdate) {
-            InputTransaction.Companion.SHIFT_UPDATE_LATER -> mHandler.postUpdateShiftState()
-            InputTransaction.Companion.SHIFT_UPDATE_NOW -> mKeyboardSwitcher.requestUpdatingShiftState(
+            InputTransaction.SHIFT_UPDATE_LATER -> mHandler.postUpdateShiftState()
+            InputTransaction.SHIFT_UPDATE_NOW -> mKeyboardSwitcher.requestUpdatingShiftState(
                 currentAutoCapsState,
                 currentRecapitalizeState
             )
@@ -887,7 +887,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
             }
         }
         val feedbackManager: AudioAndHapticFeedbackManager =
-            AudioAndHapticFeedbackManager.Companion.getInstance()
+            AudioAndHapticFeedbackManager.instance
         if (repeatCount == 0) {
             // TODO: Reconsider how to perform haptic feedback when repeating key.
             feedbackManager.performHapticFeedback(keyboardView)
@@ -922,14 +922,14 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
         override fun onReceive(context: Context, intent: Intent) {
             val action: String? = intent.action
             if (action == AudioManager.RINGER_MODE_CHANGED_ACTION) {
-                AudioAndHapticFeedbackManager.Companion.getInstance().onRingerModeChanged()
+                AudioAndHapticFeedbackManager.instance.onRingerModeChanged()
             }
         }
     }
 
     init {
-        mSettings = Settings.Companion.getInstance()
-        mKeyboardSwitcher = KeyboardSwitcher.Companion.getInstance()
+        mSettings = Settings.instance
+        mKeyboardSwitcher = KeyboardSwitcher.instance
     }
 
     fun launchSettings() {
@@ -972,14 +972,14 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
         // TODO: Revisit here to reorganize the settings. Probably we can/should use different
         // strategy once the implementation of
         // {@link InputMethodManager#shouldOfferSwitchingToNextInputMethod} is defined well.
-        if (!mSettings.current.mImeSwitchEnabled) {
+        if (mSettings.current?.mImeSwitchEnabled != true) {
             return false
         }
         return mRichImm!!.shouldOfferSwitchingToOtherInputMethods(token)
     }
 
     fun shouldShowLanguageSwitchKey(): Boolean {
-        if (mSettings.current.isLanguageSwitchKeyDisabled) {
+        if (mSettings.current?.isLanguageSwitchKeyDisabled == true) {
             return false
         }
         if (mRichImm!!.hasMultipleEnabledSubtypes()) {
@@ -994,15 +994,12 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
     }
 
     private fun setNavigationBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mSettings.current.mUseMatchingNavbarColor) {
-            val prefs: SharedPreferences? = PreferenceManagerCompat.getDeviceSharedPreferences(this)
-            val keyboardColor: Int = Settings.Companion.readKeyboardColor(
-                prefs!!, this
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mSettings.current?.mUseMatchingNavbarColor == true) {
+            val prefs: SharedPreferences = PreferenceManagerCompat.getDeviceSharedPreferences(this)
+            val keyboardColor: Int = Settings.readKeyboardColor(
+                prefs, this
             )
-            val window: Window? = window.window
-            if (window == null) {
-                return
-            }
+            val window: Window = window.window ?: return
             mOriginalNavBarColor = window.navigationBarColor
             window.navigationBarColor = keyboardColor
 
@@ -1019,11 +1016,8 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
     }
 
     private fun clearNavigationBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mSettings.current.mUseMatchingNavbarColor) {
-            val window: Window? = window.window
-            if (window == null) {
-                return
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mSettings.current?.mUseMatchingNavbarColor == true) {
+            val window: Window = window.window ?: return
             window.navigationBarColor = mOriginalNavBarColor
             val view: View = window.decorView
             view.systemUiVisibility = mOriginalNavBarFlags
@@ -1050,12 +1044,12 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
             val codePoint: Int
             if (keyCodeOrCodePoint <= 0) {
                 keyCode = keyCodeOrCodePoint
-                codePoint = Event.Companion.NOT_A_CODE_POINT
+                codePoint = Event.NOT_A_CODE_POINT
             } else {
-                keyCode = Event.Companion.NOT_A_KEY_CODE
+                keyCode = Event.NOT_A_KEY_CODE
                 codePoint = keyCodeOrCodePoint
             }
-            return Event.Companion.createSoftwareKeypressEvent(
+            return Event.createSoftwareKeypressEvent(
                 codePoint,
                 keyCode,
                 keyX,

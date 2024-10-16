@@ -120,7 +120,7 @@ class Settings private constructor() : OnSharedPreferenceChangeListener {
             res: Resources
         ): Boolean {
             val hasVibrator: Boolean =
-                AudioAndHapticFeedbackManager.Companion.getInstance().hasVibrator()
+                AudioAndHapticFeedbackManager.instance.hasVibrator()
             return hasVibrator && prefs.getBoolean(
                 PREF_VIBRATE_ON,
                 res.getBoolean(R.bool.config_default_vibration_enabled)
@@ -184,7 +184,7 @@ class Settings private constructor() : OnSharedPreferenceChangeListener {
 
         // Default keypress sound volume for unknown devices.
         // The negative value means system default.
-        private val DEFAULT_KEYPRESS_SOUND_VOLUME: String = -1.0f.toString()
+        private val DEFAULT_KEYPRESS_SOUND_VOLUME: String = (-1.0f).toString()
 
         fun readDefaultKeypressSoundVolume(res: Resources): Float {
             return ResourceUtils.getDeviceOverrideValue(
@@ -226,7 +226,7 @@ class Settings private constructor() : OnSharedPreferenceChangeListener {
 
         // Default keypress vibration duration for unknown devices.
         // The negative value means system default.
-        private val DEFAULT_KEYPRESS_VIBRATION_DURATION: String = -1.toString()
+        private val DEFAULT_KEYPRESS_VIBRATION_DURATION: String = (-1).toString()
 
         fun readDefaultKeypressVibrationDuration(res: Resources): Int {
             return ResourceUtils.getDeviceOverrideValue(
@@ -252,7 +252,7 @@ class Settings private constructor() : OnSharedPreferenceChangeListener {
         fun readKeyboardDefaultColor(context: Context): Int {
             val keyboardThemeColors = context.resources.getIntArray(R.array.keyboard_theme_colors)
             val keyboardThemeIds = context.resources.getIntArray(R.array.keyboard_theme_ids)
-            val themeId: Int = KeyboardTheme.Companion.getKeyboardTheme(context)!!.mThemeId
+            val themeId: Int = KeyboardTheme.getKeyboardTheme(context)!!.mThemeId
             for (index in keyboardThemeIds.indices) {
                 if (themeId == keyboardThemeIds[index]) {
                     return keyboardThemeColors[index]

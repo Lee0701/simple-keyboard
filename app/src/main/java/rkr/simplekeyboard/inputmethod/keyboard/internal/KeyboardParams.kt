@@ -23,7 +23,7 @@ import rkr.simplekeyboard.inputmethod.latin.common.Constants
 import java.util.SortedSet
 import java.util.TreeSet
 
-open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache = UniqueKeysCache.Companion.NO_CACHE) {
+open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache = UniqueKeysCache.NO_CACHE) {
     var mId: KeyboardId? = null
 
     /** Total height and width of the keyboard, including the paddings and keys  */
@@ -72,8 +72,8 @@ open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache =
 
     fun onAddKey(newKey: Key?) {
         val key: Key? = mUniqueKeysCache.getUniqueKey(newKey)
-        val isSpacer: Boolean = key!!.isSpacer()
-        if (isSpacer && key.getWidth() == 0) {
+        val isSpacer: Boolean = key!!.isSpacer
+        if (isSpacer && key.width == 0) {
             // Ignore zero width {@link Spacer}.
             return
         }
@@ -82,7 +82,7 @@ open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache =
             return
         }
         updateHistogram(key)
-        if (key.getCode() == Constants.CODE_SHIFT) {
+        if (key.code == Constants.CODE_SHIFT) {
             mShiftKeys.add(key)
         }
         if (key.altCodeWhileTyping()) {
@@ -102,7 +102,7 @@ open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache =
         val allKeys: ArrayList<Key> = ArrayList(mSortedKeys)
         mSortedKeys.clear()
         for (key: Key in allKeys) {
-            val filteredKey: Key = Key.Companion.removeRedundantMoreKeys(key, lettersOnBaseLayout)
+            val filteredKey: Key = Key.removeRedundantMoreKeys(key, lettersOnBaseLayout)
             mSortedKeys.add(mUniqueKeysCache.getUniqueKey(filteredKey))
         }
     }
@@ -117,14 +117,14 @@ open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache =
     }
 
     private fun updateHistogram(key: Key) {
-        val height: Int = Math.round(key.getDefinedHeight()).toInt()
+        val height: Int = Math.round(key.definedHeight)
         val heightCount: Int = updateHistogramCounter(mHeightHistogram, height)
         if (heightCount > mMaxHeightCount) {
             mMaxHeightCount = heightCount
             mMostCommonKeyHeight = height
         }
 
-        val width: Int = Math.round(key.getDefinedWidth()).toInt()
+        val width: Int = Math.round(key.definedWidth)
         val widthCount: Int = updateHistogramCounter(mWidthHistogram, width)
         if (widthCount > mMaxWidthCount) {
             mMaxWidthCount = widthCount
@@ -136,10 +136,10 @@ open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache =
         // Comparator to sort {@link Key}s from top-left to bottom-right order.
         private val ROW_COLUMN_COMPARATOR: Comparator<Key> = object : Comparator<Key> {
             override fun compare(lhs: Key, rhs: Key): Int {
-                if (lhs.getY() < rhs.getY()) return -1
-                if (lhs.getY() > rhs.getY()) return 1
-                if (lhs.getX() < rhs.getX()) return -1
-                if (lhs.getX() > rhs.getX()) return 1
+                if (lhs.y < rhs.y) return -1
+                if (lhs.y > rhs.y) return 1
+                if (lhs.x < rhs.x) return -1
+                if (lhs.x > rhs.x) return 1
                 return 0
             }
         }

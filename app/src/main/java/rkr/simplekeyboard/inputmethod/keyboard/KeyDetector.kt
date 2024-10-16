@@ -90,11 +90,11 @@ open class KeyDetector @JvmOverloads constructor(
         val touchX: Int = getTouchX(x)
         val touchY: Int = getTouchY(y)
 
-        for (key: Key in keyboard!!.getNearestKeys(
+        for (key: Key? in keyboard!!.getNearestKeys(
             touchX,
             touchY
         )!!) {
-            if (key.isOnKey(touchX, touchY)) {
+            if (key?.isOnKey(touchX, touchY) == true) {
                 return key
             }
         }

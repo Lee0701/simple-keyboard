@@ -130,7 +130,7 @@ class RichInputConnection(parent: InputMethodService) {
         if (++mNestLevel == 1) {
             mIC = mParent.getCurrentInputConnection()
             if (isConnected) {
-                mIC.beginBatchEdit()
+                mIC?.beginBatchEdit()
             }
         } else {
             if (DBG) {
@@ -223,7 +223,7 @@ class RichInputConnection(parent: InputMethodService) {
      * @param newCursorPosition The new cursor position around the text.
      */
     fun commitText(text: CharSequence, newCursorPosition: Int) {
-        RichInputMethodManager.Companion.getInstance().resetSubtypeCycleOrder()
+        RichInputMethodManager.instance.resetSubtypeCycleOrder()
         if (DEBUG_BATCH_NESTING) checkBatchEdit()
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug()
         mCommittedTextBeforeComposingText.append(text)
@@ -365,7 +365,7 @@ class RichInputConnection(parent: InputMethodService) {
             return null
         }
         val startTime: Long = SystemClock.uptimeMillis()
-        val result: CharSequence? = mIC.getTextBeforeCursor(n, flags)
+        val result: CharSequence? = mIC?.getTextBeforeCursor(n, flags)
         detectLaggyConnection(operation, timeout, startTime)
         return result
     }
@@ -378,7 +378,7 @@ class RichInputConnection(parent: InputMethodService) {
             return null
         }
         val startTime: Long = SystemClock.uptimeMillis()
-        val result: CharSequence? = mIC.getTextAfterCursor(n, flags)
+        val result: CharSequence? = mIC?.getTextAfterCursor(n, flags)
         detectLaggyConnection(operation, timeout, startTime)
         return result
     }
@@ -392,7 +392,7 @@ class RichInputConnection(parent: InputMethodService) {
     }
 
     fun replaceText(startPosition: Int, endPosition: Int, text: CharSequence?) {
-        RichInputMethodManager.Companion.getInstance().resetSubtypeCycleOrder()
+        RichInputMethodManager.instance.resetSubtypeCycleOrder()
         mIC!!.setComposingRegion(startPosition, endPosition)
         mIC!!.setComposingText(text, startPosition)
         mIC!!.finishComposingText()
@@ -401,12 +401,12 @@ class RichInputConnection(parent: InputMethodService) {
     fun performEditorAction(actionId: Int) {
         mIC = mParent.getCurrentInputConnection()
         if (isConnected) {
-            mIC.performEditorAction(actionId)
+            mIC?.performEditorAction(actionId)
         }
     }
 
     fun sendKeyEvent(keyEvent: KeyEvent) {
-        RichInputMethodManager.Companion.getInstance().resetSubtypeCycleOrder()
+        RichInputMethodManager.instance.resetSubtypeCycleOrder()
         if (DEBUG_BATCH_NESTING) checkBatchEdit()
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
             if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug()
@@ -484,7 +484,7 @@ class RichInputConnection(parent: InputMethodService) {
         if (expectedSelectionStart == start && expectedSelectionEnd == end) {
             return
         }
-        RichInputMethodManager.Companion.getInstance().resetSubtypeCycleOrder()
+        RichInputMethodManager.instance.resetSubtypeCycleOrder()
 
         expectedSelectionStart = start
         expectedSelectionEnd = end

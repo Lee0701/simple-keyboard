@@ -171,8 +171,7 @@ object LocaleResourceUtils {
         } else {
             LocaleUtils.constructLocaleFromString(
                 localeString
-            )
-                .getDisplayName(displayLocale)
+            )!!.getDisplayName(displayLocale)
         }
         return StringUtils.capitalizeFirstCodePoint(displayName, displayLocale)
     }

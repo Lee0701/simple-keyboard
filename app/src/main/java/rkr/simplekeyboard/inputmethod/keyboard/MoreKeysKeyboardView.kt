@@ -39,7 +39,7 @@ class MoreKeysKeyboardView @JvmOverloads constructor(
     private val mCoordinates: IntArray = CoordinateUtils.newInstance()
 
     protected val mKeyDetector: KeyDetector
-    private var mController: MoreKeysPanel.Controller = MoreKeysPanel.Companion.EMPTY_CONTROLLER
+    private var mController: MoreKeysPanel.Controller = MoreKeysPanel.EMPTY_CONTROLLER
     protected var mListener: KeyboardActionListener? = null
     private var mOriginX: Int = 0
     private var mOriginY: Int = 0
@@ -61,7 +61,7 @@ class MoreKeysKeyboardView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val keyboard: Keyboard? = getKeyboard()
+        val keyboard: Keyboard? = keyboard
         if (keyboard != null) {
             val width: Int = keyboard.mOccupiedWidth + getPaddingLeft() + getPaddingRight()
             val height: Int = keyboard.mOccupiedHeight + getPaddingTop() + getPaddingBottom()
@@ -74,9 +74,9 @@ class MoreKeysKeyboardView @JvmOverloads constructor(
     override var keyboard: Keyboard?
         get() = super.keyboard
         set(keyboard) {
-            super.setKeyboard(keyboard)
+            super.keyboard = keyboard
             mKeyDetector.setKeyboard(
-                keyboard!!, -getPaddingLeft().toFloat(), -getPaddingTop() + getVerticalCorrection()
+                keyboard!!, -getPaddingLeft().toFloat(), -getPaddingTop() + verticalCorrection
             )
         }
 
@@ -116,7 +116,7 @@ class MoreKeysKeyboardView @JvmOverloads constructor(
          * Returns the default x coordinate for showing this panel.
          */
         get() {
-            return (getKeyboard() as MoreKeysKeyboard).getDefaultCoordX()
+            return (keyboard as MoreKeysKeyboard).defaultCoordX
         }
 
     override fun onDownEvent(x: Int, y: Int, pointerId: Int) {
@@ -154,9 +154,9 @@ class MoreKeysKeyboardView @JvmOverloads constructor(
      * Performs the specific action for this panel when the user presses a key on the panel.
      */
     protected fun onKeyInput(key: Key) {
-        val code: Int = key.getCode()
+        val code: Int = key.code
         if (code == Constants.CODE_OUTPUT_TEXT) {
-            mListener!!.onTextInput(mCurrentKey.getOutputText())
+            mListener!!.onTextInput(mCurrentKey!!.outputText)
         } else if (code != Constants.CODE_UNSPECIFIED) {
             mListener!!.onCodeInput(
                 code,

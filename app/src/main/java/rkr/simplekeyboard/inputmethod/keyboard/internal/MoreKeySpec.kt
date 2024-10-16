@@ -52,7 +52,7 @@ class MoreKeySpec(
     ): Key {
         return Key(
             mLabel, mIconId, mCode, mOutputText, null,  /* hintLabel */labelFlags,
-            Key.Companion.BACKGROUND_TYPE_NORMAL, x, y, width, height, leftPadding, rightPadding,
+            Key.BACKGROUND_TYPE_NORMAL, x, y, width, height, leftPadding, rightPadding,
             topPadding, bottomPadding
         )
     }
@@ -83,10 +83,10 @@ class MoreKeySpec(
     }
 
     override fun toString(): String {
-        val label: String? = (if (mIconId == KeyboardIconsSet.Companion.ICON_UNDEFINED)
+        val label: String? = (if (mIconId == KeyboardIconsSet.ICON_UNDEFINED)
             mLabel
         else
-            KeyboardIconsSet.Companion.PREFIX_ICON + KeyboardIconsSet.Companion.getIconName(mIconId))
+            KeyboardIconsSet.PREFIX_ICON + KeyboardIconsSet.getIconName(mIconId))
         val output: String? = (if (mCode == Constants.CODE_OUTPUT_TEXT)
             mOutputText
         else
@@ -94,7 +94,7 @@ class MoreKeySpec(
         if (StringUtils.codePointCount(label) == 1 && label!!.codePointAt(0) == mCode) {
             return output!!
         }
-        return label + "|" + output
+        return "$label|$output"
     }
 
     class LettersOnBaseLayout {
@@ -102,11 +102,11 @@ class MoreKeySpec(
         private val mTexts: HashSet<String?> = HashSet()
 
         fun addLetter(key: Key) {
-            val code: Int = key.getCode()
+            val code: Int = key.code
             if (Character.isAlphabetic(code)) {
                 mCodes.put(code, 0)
             } else if (code == Constants.CODE_OUTPUT_TEXT) {
-                mTexts.add(key.getOutputText())
+                mTexts.add(key.outputText)
             }
         }
 
@@ -159,15 +159,15 @@ class MoreKeySpec(
 
     companion object {
         fun removeRedundantMoreKeys(
-            moreKeys: Array<MoreKeySpec>?,
+            moreKeys: Array<MoreKeySpec?>?,
             lettersOnBaseLayout: LettersOnBaseLayout
-        ): Array<MoreKeySpec>? {
+        ): Array<MoreKeySpec?>? {
             if (moreKeys == null) {
                 return null
             }
-            val filteredMoreKeys: ArrayList<MoreKeySpec> = ArrayList()
-            for (moreKey: MoreKeySpec in moreKeys) {
-                if (!lettersOnBaseLayout.contains(moreKey)) {
+            val filteredMoreKeys: ArrayList<MoreKeySpec?> = ArrayList()
+            for (moreKey: MoreKeySpec? in moreKeys) {
+                if (moreKey != null && !lettersOnBaseLayout.contains(moreKey)) {
                     filteredMoreKeys.add(moreKey)
                 }
             }
@@ -178,7 +178,7 @@ class MoreKeySpec(
             if (size == 0) {
                 return null
             }
-            return filteredMoreKeys.toTypedArray<MoreKeySpec>()
+            return filteredMoreKeys.toTypedArray<MoreKeySpec?>()
         }
 
         // Constants for parsing.
@@ -199,14 +199,14 @@ class MoreKeySpec(
          * @return an array of key specification text. Null if the specified `text` is empty
          * or has no key specifications.
          */
-        fun splitKeySpecs(text: String?): Array<String>? {
+        fun splitKeySpecs(text: String?): Array<String?>? {
             if (TextUtils.isEmpty(text)) {
                 return null
             }
             val size: Int = text!!.length
             // Optimization for one-letter key specification.
             if (size == 1) {
-                return if (text.get(0) == COMMA) null else arrayOf<String?>(text)
+                return if (text.get(0) == COMMA) null else arrayOf(text)
             }
 
             var list: ArrayList<String>? = null
@@ -240,7 +240,7 @@ class MoreKeySpec(
             if (remain != null) {
                 list.add(remain)
             }
-            return list.toTypedArray<String>()
+            return list.toTypedArray<String?>()
         }
 
         private val EMPTY_STRING_ARRAY: Array<String?> = arrayOfNulls(0)
@@ -285,7 +285,7 @@ class MoreKeySpec(
                         if (out != null) {
                             out.add(additionalMoreKey)
                         } else {
-                            moreKeys.get(moreKeyIndex) = additionalMoreKey
+                            moreKeys[moreKeyIndex] = additionalMoreKey
                         }
                         additionalIndex++
                     } else {
@@ -343,7 +343,7 @@ class MoreKeySpec(
                 if (moreKeySpec == null || !moreKeySpec.startsWith(key)) {
                     continue
                 }
-                moreKeys.get(i) = null
+                moreKeys[i] = null
                 try {
                     if (!foundValue) {
                         value = moreKeySpec.substring(keyLen).toInt()
@@ -368,7 +368,7 @@ class MoreKeySpec(
                 if (moreKeySpec == null || moreKeySpec != key) {
                     continue
                 }
-                moreKeys.get(i) = null
+                moreKeys[i] = null
                 value = true
             }
             return value

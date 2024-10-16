@@ -131,7 +131,7 @@ class KeyboardTheme private constructor(themeId: Int, themeName: String, styleId
                 Log.w(TAG, "Illegal keyboard theme in preference: " + themeIdString, e)
             }
             // Remove preference that contains unknown or illegal theme id.
-            prefs.edit().remove(KEYBOARD_THEME_KEY).remove(Settings.Companion.PREF_KEYBOARD_COLOR)
+            prefs.edit().remove(KEYBOARD_THEME_KEY).remove(Settings.PREF_KEYBOARD_COLOR)
                 .apply()
             return defaultKeyboardTheme
         }

@@ -34,8 +34,8 @@ class KeyboardIconsSet {
                 val icon: Drawable? = keyboardAttrs.getDrawable(attrId)
                 setDefaultBounds(icon)
                 val iconId: Int = ATTR_ID_TO_ICON_ID.get(attrId)
-                mIcons.get(iconId) = icon
-                mIconResourceIds.get(iconId) = keyboardAttrs.getResourceId(attrId, 0)
+                mIcons[iconId] = icon
+                mIconResourceIds[iconId] = keyboardAttrs.getResourceId(attrId, 0)
             } catch (e: NotFoundException) {
                 Log.w(
                     TAG, ("Drawable resource for icon #"
@@ -118,7 +118,7 @@ class KeyboardIconsSet {
                     ATTR_ID_TO_ICON_ID.put(attrId, iconId)
                 }
                 sNameToIdsMap.put(name, iconId)
-                ICON_NAMES.get(iconId) = name
+                ICON_NAMES[iconId] = name
                 iconId++
                 i += 2
             }

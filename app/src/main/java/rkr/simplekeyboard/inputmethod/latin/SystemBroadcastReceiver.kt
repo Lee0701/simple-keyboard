@@ -30,7 +30,7 @@ class SystemBroadcastReceiver : BroadcastReceiver() {
         val intentAction: String? = intent.getAction()
         if (Intent.ACTION_LOCALE_CHANGED == intentAction) {
             Log.i(TAG, "System locale changed")
-            KeyboardLayoutSet.Companion.onSystemLocaleChanged()
+            KeyboardLayoutSet.onSystemLocaleChanged()
         }
     }
 

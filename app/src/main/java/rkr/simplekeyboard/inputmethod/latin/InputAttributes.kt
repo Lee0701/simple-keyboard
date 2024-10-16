@@ -70,39 +70,39 @@ class InputAttributes(editorInfo: EditorInfo?, isFullscreenMode: Boolean) {
             mInputTypeNoAutoCorrect = false
             mApplicationSpecifiedCompletionOn = false
             mShouldInsertSpacesAutomatically = false
-            return
+        } else {
+            // inputClass == InputType.TYPE_CLASS_TEXT
+            val variation: Int = inputType and InputType.TYPE_MASK_VARIATION
+            val flagNoSuggestions: Boolean =
+                0 != (inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+            val flagMultiLine: Boolean =
+                0 != (inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE)
+            val flagAutoCorrect: Boolean =
+                0 != (inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT)
+            val flagAutoComplete: Boolean =
+                0 != (inputType and InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE)
+
+            // TODO: Have a helper method in InputTypeUtils
+            // Make sure that passwords are not displayed in {@link SuggestionStripView}.
+            val shouldSuppressSuggestions: Boolean = mIsPasswordField
+                    || InputTypeUtils.isEmailVariation(variation)
+                    || InputType.TYPE_TEXT_VARIATION_URI == variation || InputType.TYPE_TEXT_VARIATION_FILTER == variation || flagNoSuggestions
+                    || flagAutoComplete
+            mShouldShowSuggestions = !shouldSuppressSuggestions
+
+            mShouldInsertSpacesAutomatically = InputTypeUtils.isAutoSpaceFriendlyType(inputType)
+
+            // If it's a browser edit field and auto correct is not ON explicitly, then
+            // disable auto correction, but keep suggestions on.
+            // If NO_SUGGESTIONS is set, don't do prediction.
+            // If it's not multiline and the autoCorrect flag is not set, then don't correct
+            mInputTypeNoAutoCorrect =
+                (variation == InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT && !flagAutoCorrect)
+                        || flagNoSuggestions
+                        || (!flagAutoCorrect && !flagMultiLine)
+
+            mApplicationSpecifiedCompletionOn = flagAutoComplete && isFullscreenMode
         }
-        // inputClass == InputType.TYPE_CLASS_TEXT
-        val variation: Int = inputType and InputType.TYPE_MASK_VARIATION
-        val flagNoSuggestions: Boolean =
-            0 != (inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
-        val flagMultiLine: Boolean =
-            0 != (inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE)
-        val flagAutoCorrect: Boolean =
-            0 != (inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT)
-        val flagAutoComplete: Boolean =
-            0 != (inputType and InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE)
-
-        // TODO: Have a helper method in InputTypeUtils
-        // Make sure that passwords are not displayed in {@link SuggestionStripView}.
-        val shouldSuppressSuggestions: Boolean = mIsPasswordField
-                || InputTypeUtils.isEmailVariation(variation)
-                || InputType.TYPE_TEXT_VARIATION_URI == variation || InputType.TYPE_TEXT_VARIATION_FILTER == variation || flagNoSuggestions
-                || flagAutoComplete
-        mShouldShowSuggestions = !shouldSuppressSuggestions
-
-        mShouldInsertSpacesAutomatically = InputTypeUtils.isAutoSpaceFriendlyType(inputType)
-
-        // If it's a browser edit field and auto correct is not ON explicitly, then
-        // disable auto correction, but keep suggestions on.
-        // If NO_SUGGESTIONS is set, don't do prediction.
-        // If it's not multiline and the autoCorrect flag is not set, then don't correct
-        mInputTypeNoAutoCorrect =
-            (variation == InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT && !flagAutoCorrect)
-                    || flagNoSuggestions
-                    || (!flagAutoCorrect && !flagMultiLine)
-
-        mApplicationSpecifiedCompletionOn = flagAutoComplete && isFullscreenMode
     }
 
     val isTypeNull: Boolean

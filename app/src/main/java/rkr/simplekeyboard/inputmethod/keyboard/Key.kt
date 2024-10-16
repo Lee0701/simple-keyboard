@@ -196,18 +196,18 @@ open class Key : Comparable<Key> {
         // Update the row to work with the new key
         row.setCurrentKey(keyAttr, isSpacer)
 
-        definedWidth = row.getKeyWidth()
-        definedHeight = row.getKeyHeight()
+        definedWidth = row.keyWidth
+        definedHeight = row.keyHeight
 
-        val keyLeft: Float = row.getKeyX()
-        val keyTop: Float = row.getKeyY()
+        val keyLeft: Float = row.keyX
+        val keyTop: Float = row.keyY
         val keyRight: Float = keyLeft + definedWidth
         val keyBottom: Float = keyTop + definedHeight
 
-        val leftPadding: Float = row.getKeyLeftPadding()
-        val topPadding: Float = row.getKeyTopPadding()
-        val rightPadding: Float = row.getKeyRightPadding()
-        val bottomPadding: Float = row.getKeyBottomPadding()
+        val leftPadding: Float = row.keyLeftPadding
+        val topPadding: Float = row.keyTopPadding
+        val rightPadding: Float = row.keyRightPadding
+        val bottomPadding: Float = row.keyBottomPadding
 
         mHitbox.set(
             Math.round(keyLeft - leftPadding), Math.round(keyTop - topPadding),
@@ -220,13 +220,13 @@ open class Key : Comparable<Key> {
 
         mBackgroundType = style.getInt(
             keyAttr,
-            R.styleable.Keyboard_Key_backgroundType, row.getDefaultBackgroundType()
+            R.styleable.Keyboard_Key_backgroundType, row.defaultBackgroundType
         )
 
         mLabelFlags = (style.getFlags(keyAttr, R.styleable.Keyboard_Key_keyLabelFlags)
-                or row.getDefaultKeyLabelFlags())
+                or row.defaultKeyLabelFlags)
         val needsToUpcase: Boolean = needsToUpcase(mLabelFlags, params.mId!!.mElementId)
-        val localeForUpcasing: Locale? = params.mId.getLocale()
+        val localeForUpcasing: Locale? = params.mId!!.locale
         var actionFlags: Int = style.getFlags(keyAttr, R.styleable.Keyboard_Key_keyActionFlags)
         var moreKeys: Array<String?>? =
             style.getStringArray(keyAttr, R.styleable.Keyboard_Key_moreKeys)
@@ -238,24 +238,24 @@ open class Key : Comparable<Key> {
             params.mMaxMoreKeysKeyboardColumn
         ))
         var value: Int
-        if ((MoreKeySpec.Companion.getIntValue(moreKeys, MORE_KEYS_AUTO_COLUMN_ORDER, -1)
+        if ((MoreKeySpec.getIntValue(moreKeys, MORE_KEYS_AUTO_COLUMN_ORDER, -1)
                 .also { value = it }) > 0
         ) {
             // Override with fixed column order number and set a relevant mode value.
             moreKeysColumnAndFlags = (MORE_KEYS_MODE_FIXED_COLUMN_WITH_AUTO_ORDER
                     or (value and MORE_KEYS_COLUMN_NUMBER_MASK))
         }
-        if ((MoreKeySpec.Companion.getIntValue(moreKeys, MORE_KEYS_FIXED_COLUMN_ORDER, -1)
+        if ((MoreKeySpec.getIntValue(moreKeys, MORE_KEYS_FIXED_COLUMN_ORDER, -1)
                 .also { value = it }) > 0
         ) {
             // Override with fixed column order number and set a relevant mode value.
             moreKeysColumnAndFlags = (MORE_KEYS_MODE_FIXED_COLUMN_WITH_FIXED_ORDER
                     or (value and MORE_KEYS_COLUMN_NUMBER_MASK))
         }
-        if (MoreKeySpec.Companion.getBooleanValue(moreKeys, MORE_KEYS_HAS_LABELS)) {
+        if (MoreKeySpec.getBooleanValue(moreKeys, MORE_KEYS_HAS_LABELS)) {
             moreKeysColumnAndFlags = moreKeysColumnAndFlags or MORE_KEYS_FLAGS_HAS_LABELS
         }
-        if (MoreKeySpec.Companion.getBooleanValue(moreKeys, MORE_KEYS_NO_PANEL_AUTO_MORE_KEY)) {
+        if (MoreKeySpec.getBooleanValue(moreKeys, MORE_KEYS_NO_PANEL_AUTO_MORE_KEY)) {
             moreKeysColumnAndFlags =
                 moreKeysColumnAndFlags or MORE_KEYS_FLAGS_NO_PANEL_AUTO_MORE_KEY
         }
@@ -270,12 +270,12 @@ open class Key : Comparable<Key> {
                 R.styleable.Keyboard_Key_additionalMoreKeys
             )
         }
-        moreKeys = MoreKeySpec.Companion.insertAdditionalMoreKeys(moreKeys, additionalMoreKeys)
+        moreKeys = MoreKeySpec.insertAdditionalMoreKeys(moreKeys, additionalMoreKeys)
         if (moreKeys != null) {
             actionFlags = actionFlags or ACTION_FLAGS_ENABLE_LONG_PRESS
             this.moreKeys = arrayOfNulls(moreKeys.size)
             for (i in moreKeys.indices) {
-                moreKeys.get(i) = MoreKeySpec(moreKeys.get(i)!!, needsToUpcase, localeForUpcasing)
+                moreKeys[i] = MoreKeySpec(moreKeys[i]!!, needsToUpcase, localeForUpcasing).toString()
             }
         } else {
             this.moreKeys = null
@@ -368,7 +368,7 @@ open class Key : Comparable<Key> {
         else
             altCodeInAttr
         mOptionalAttributes = OptionalAttributes.newInstance(outputText, altCode)
-        visualAttributes = KeyVisualAttributes.Companion.newInstance(keyAttr)
+        visualAttributes = KeyVisualAttributes.newInstance(keyAttr)
         mHashCode = computeHashCode(this)
     }
 
@@ -763,7 +763,7 @@ open class Key : Comparable<Key> {
         init {
             mReleasedState = attrs
             mPressedState = attrs.copyOf(attrs.size + 1)
-            mPressedState.get(attrs.size) = android.R.attr.state_pressed
+            mPressedState[attrs.size] = android.R.attr.state_pressed
         }
 
         companion object {
@@ -886,17 +886,17 @@ open class Key : Comparable<Key> {
             lettersOnBaseLayout: LettersOnBaseLayout
         ): Key {
             val moreKeys: Array<MoreKeySpec?>? = key.moreKeys
-            val filteredMoreKeys: Array<MoreKeySpec>? =
-                MoreKeySpec.Companion.removeRedundantMoreKeys(
+            val filteredMoreKeys: Array<MoreKeySpec?>? =
+                MoreKeySpec.removeRedundantMoreKeys(
                     moreKeys, lettersOnBaseLayout
                 )
-            return if ((filteredMoreKeys == moreKeys)) key else Key(key, filteredMoreKeys)
+            return if (filteredMoreKeys.contentEquals(moreKeys)) key else Key(key, filteredMoreKeys)
         }
 
         private fun needsToUpcase(labelFlags: Int, keyboardElementId: Int): Boolean {
             if ((labelFlags and LABEL_FLAGS_PRESERVE_CASE) != 0) return false
             when (keyboardElementId) {
-                KeyboardId.Companion.ELEMENT_ALPHABET_MANUAL_SHIFTED, KeyboardId.Companion.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED, KeyboardId.Companion.ELEMENT_ALPHABET_SHIFT_LOCKED -> return true
+                KeyboardId.ELEMENT_ALPHABET_MANUAL_SHIFTED, KeyboardId.ELEMENT_ALPHABET_AUTOMATIC_SHIFTED, KeyboardId.ELEMENT_ALPHABET_SHIFT_LOCKED -> return true
                 else -> return false
             }
         }

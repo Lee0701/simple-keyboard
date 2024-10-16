@@ -310,7 +310,7 @@ class MoreKeysKeyboard internal constructor(params: MoreKeysKeyboardParams) : Ke
         isSingleMoreKeyWithPreview: Boolean, keyPreviewVisibleWidth: Int,
         keyPreviewVisibleHeight: Int, paintToMeasure: Paint
     ) :
-        KeyboardBuilder<MoreKeysKeyboardParams?>(context, MoreKeysKeyboardParams()) {
+        KeyboardBuilder<MoreKeysKeyboardParams>(context, MoreKeysKeyboardParams()) {
         private val mParentKey: Key
 
         /**
@@ -376,18 +376,18 @@ class MoreKeysKeyboard internal constructor(params: MoreKeysKeyboardParams) : Ke
                         + mParams.mHorizontalGap)
                 rowHeight = keyboard.mMostCommonKeyHeight + keyboard.mVerticalGap
             }
-            val moreKeys: Array<MoreKeySpec?>? = key.getMoreKeys()
+            val moreKeys: Array<MoreKeySpec?>? = key.moreKeys
             mParams.setParameters(
-                moreKeys!!.size, key.getMoreKeysColumnNumber(), keyPaddedWidth,
-                rowHeight, key.getX() + key.getWidth() / 2f, keyboard.mId!!.mWidth,
-                key.isMoreKeysFixedColumn(), key.isMoreKeysFixedOrder()
+                moreKeys!!.size, key.moreKeysColumnNumber, keyPaddedWidth,
+                rowHeight, key.x + key.width / 2f, keyboard.mId!!.mWidth,
+                key.isMoreKeysFixedColumn, key.isMoreKeysFixedOrder
             )
         }
 
         override fun build(): MoreKeysKeyboard {
             val params: MoreKeysKeyboardParams = mParams!!
-            val moreKeyFlags: Int = mParentKey.getMoreKeyLabelFlags()
-            val moreKeys: Array<MoreKeySpec?>? = mParentKey.getMoreKeys()
+            val moreKeyFlags: Int = mParentKey.moreKeyLabelFlags
+            val moreKeys: Array<MoreKeySpec?>? = mParentKey.moreKeys
             for (n in moreKeys!!.indices) {
                 val moreKeySpec: MoreKeySpec? = moreKeys.get(n)
                 val row: Int = n / params.mNumColumns
@@ -439,8 +439,8 @@ class MoreKeysKeyboard internal constructor(params: MoreKeysKeyboardParams) : Ke
                 padding: Float, paint: Paint
             ): Float {
                 var maxWidth: Float = minKeyWidth
-                for (spec: MoreKeySpec in parentKey.getMoreKeys()) {
-                    val label: String? = spec.mLabel
+                for (spec: MoreKeySpec? in parentKey.moreKeys!!) {
+                    val label: String? = spec?.mLabel
                     // If the label is single letter, minKeyWidth is enough to hold the label.
                     if (label != null && StringUtils.codePointCount(label) > 1) {
                         maxWidth = max(

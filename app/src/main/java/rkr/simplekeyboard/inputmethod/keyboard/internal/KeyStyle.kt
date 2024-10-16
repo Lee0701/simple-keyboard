@@ -36,10 +36,10 @@ abstract class KeyStyle protected constructor(textsSet: KeyboardTextsSet) {
         return null
     }
 
-    protected fun parseStringArray(a: TypedArray, index: Int): Array<String>? {
+    protected fun parseStringArray(a: TypedArray, index: Int): Array<String?>? {
         if (a.hasValue(index)) {
             val text: String? = mTextsSet.resolveTextReference(a.getString(index)!!)
-            return MoreKeySpec.Companion.splitKeySpecs(text)
+            return MoreKeySpec.splitKeySpecs(text)
         }
         return null
     }

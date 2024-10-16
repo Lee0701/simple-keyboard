@@ -31,10 +31,7 @@ class TimerHandler(ownerInstance: DrawingProxy, ignoreAltCodeKeyTimeout: Int) :
     }
 
     override fun handleMessage(msg: Message) {
-        val drawingProxy: DrawingProxy? = getOwnerInstance()
-        if (drawingProxy == null) {
-            return
-        }
+        val drawingProxy: DrawingProxy = ownerInstance ?: return
         when (msg.what) {
             MSG_REPEAT_KEY -> {
                 val tracker1: PointerTracker = msg.obj as PointerTracker
@@ -58,12 +55,12 @@ class TimerHandler(ownerInstance: DrawingProxy, ignoreAltCodeKeyTimeout: Int) :
         tracker: PointerTracker, repeatCount: Int,
         delay: Int
     ) {
-        val key: Key? = tracker.getKey()
+        val key: Key? = tracker.key
         if (key == null || delay == 0) {
             return
         }
         sendMessageDelayed(
-            obtainMessage(MSG_REPEAT_KEY, key.getCode(), repeatCount, tracker), delay.toLong()
+            obtainMessage(MSG_REPEAT_KEY, key.code, repeatCount, tracker), delay.toLong()
         )
     }
 
@@ -82,13 +79,13 @@ class TimerHandler(ownerInstance: DrawingProxy, ignoreAltCodeKeyTimeout: Int) :
         }
 
     override fun startLongPressTimerOf(tracker: PointerTracker, delay: Int) {
-        val key: Key? = tracker.getKey()
+        val key: Key? = tracker.key
         if (key == null) {
             return
         }
         // Use a separate message id for long pressing shift key, because long press shift key
         // timers should be canceled when other key is pressed.
-        val messageId: Int = if ((key.getCode() == Constants.CODE_SHIFT))
+        val messageId: Int = if ((key.code == Constants.CODE_SHIFT))
             MSG_LONGPRESS_SHIFT_KEY
         else
             MSG_LONGPRESS_KEY
@@ -110,22 +107,22 @@ class TimerHandler(ownerInstance: DrawingProxy, ignoreAltCodeKeyTimeout: Int) :
     }
 
     override fun startTypingStateTimer(typedKey: Key) {
-        if (typedKey.isModifier() || typedKey.altCodeWhileTyping()) {
+        if (typedKey.isModifier || typedKey.altCodeWhileTyping()) {
             return
         }
 
         val isTyping: Boolean = isTypingState
         removeMessages(MSG_TYPING_STATE_EXPIRED)
-        val drawingProxy: DrawingProxy? = getOwnerInstance()
+        val drawingProxy: DrawingProxy? = ownerInstance
         if (drawingProxy == null) {
             return
         }
 
         // When user hits the space or the enter key, just cancel the while-typing timer.
-        val typedCode: Int = typedKey.getCode()
+        val typedCode: Int = typedKey.code
         if (typedCode == Constants.CODE_SPACE || typedCode == Constants.CODE_ENTER) {
             if (isTyping) {
-                drawingProxy.startWhileTypingAnimation(DrawingProxy.Companion.FADE_IN)
+                drawingProxy.startWhileTypingAnimation(DrawingProxy.FADE_IN)
             }
             return
         }
@@ -136,7 +133,7 @@ class TimerHandler(ownerInstance: DrawingProxy, ignoreAltCodeKeyTimeout: Int) :
         if (isTyping) {
             return
         }
-        drawingProxy.startWhileTypingAnimation(DrawingProxy.Companion.FADE_OUT)
+        drawingProxy.startWhileTypingAnimation(DrawingProxy.FADE_OUT)
     }
 
     override val isTypingState: Boolean

@@ -120,7 +120,7 @@ open class Keyboard(params: KeyboardParams) {
             }
 
             for (key: Key in sortedKeys) {
-                if (key.getCode() == code) {
+                if (key.code == code) {
                     mKeyCache.put(code, key)
                     return key
                 }
@@ -137,7 +137,7 @@ open class Keyboard(params: KeyboardParams) {
 
         for (key: Key in sortedKeys) {
             if (key === aKey) {
-                mKeyCache.put(key.getCode(), key)
+                mKeyCache.put(key.code, key)
                 return true
             }
         }

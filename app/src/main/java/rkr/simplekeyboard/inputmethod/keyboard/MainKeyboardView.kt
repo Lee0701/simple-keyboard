@@ -163,7 +163,7 @@ class MainKeyboardView @JvmOverloads constructor(
             keyHysteresisDistance, keyHysteresisDistanceForSlidingModifier
         )
 
-        PointerTracker.Companion.init(mainKeyboardViewAttr, mTimerHandler, this /* DrawingProxy */)
+        PointerTracker.init(mainKeyboardViewAttr, mTimerHandler, this /* DrawingProxy */)
 
         val hasDistinctMultitouch: Boolean = context.getPackageManager()
             .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)
@@ -223,7 +223,7 @@ class MainKeyboardView @JvmOverloads constructor(
             altCodeKeyWhileTypingFadeinAnimatorResId, this
         )
 
-        mKeyboardActionListener = KeyboardActionListener.Companion.EMPTY_LISTENER
+        mKeyboardActionListener = KeyboardActionListener.EMPTY_LISTENER
 
         mLanguageOnSpacebarHorizontalMargin = getResources().getDimension(
             R.dimen.config_language_on_spacebar_horizontal_margin
@@ -252,11 +252,11 @@ class MainKeyboardView @JvmOverloads constructor(
      */
     override fun startWhileTypingAnimation(fadeInOrOut: Int) {
         when (fadeInOrOut) {
-            DrawingProxy.Companion.FADE_IN -> cancelAndStartAnimators(
+            DrawingProxy.FADE_IN -> cancelAndStartAnimators(
                 mAltCodeKeyWhileTypingFadeoutAnimator, mAltCodeKeyWhileTypingFadeinAnimator
             )
 
-            DrawingProxy.Companion.FADE_OUT -> cancelAndStartAnimators(
+            DrawingProxy.FADE_OUT -> cancelAndStartAnimators(
                 mAltCodeKeyWhileTypingFadeinAnimator, mAltCodeKeyWhileTypingFadeoutAnimator
             )
         }
@@ -269,7 +269,7 @@ class MainKeyboardView @JvmOverloads constructor(
 
     fun setKeyboardActionListener(listener: KeyboardActionListener?) {
         mKeyboardActionListener = listener
-        PointerTracker.Companion.setKeyboardActionListener(listener)
+        PointerTracker.setKeyboardActionListener(listener)
     }
 
     // TODO: We should reconsider which coordinate system should be used to represent keyboard
@@ -297,11 +297,11 @@ class MainKeyboardView @JvmOverloads constructor(
         set(keyboard) {
             // Remove any pending messages, except dismissing preview and key repeat.
             mTimerHandler.cancelLongPressTimers()
-            super.setKeyboard(keyboard)
+            super.keyboard = keyboard
             mKeyDetector.setKeyboard(
-                keyboard!!, -getPaddingLeft().toFloat(), -getPaddingTop() + getVerticalCorrection()
+                keyboard!!, -getPaddingLeft().toFloat(), -getPaddingTop() + verticalCorrection
             )
-            PointerTracker.Companion.setKeyDetector(mKeyDetector)
+            PointerTracker.setKeyDetector(mKeyDetector)
             mMoreKeysKeyboardCache.clear()
 
             mSpaceKey =
@@ -351,20 +351,17 @@ class MainKeyboardView @JvmOverloads constructor(
     }
 
     private fun showKeyPreview(key: Key) {
-        val keyboard: Keyboard? = getKeyboard()
-        if (keyboard == null) {
-            return
-        }
+        val keyboard: Keyboard = keyboard ?: return
         val previewParams: KeyPreviewDrawParams = mKeyPreviewDrawParams
-        if (!previewParams.isPopupEnabled()) {
-            previewParams.setVisibleOffset(-Math.round(keyboard.mVerticalGap))
+        if (!previewParams.isPopupEnabled) {
+            previewParams.visibleOffset = -Math.round(keyboard.mVerticalGap)
             return
         }
 
         locatePreviewPlacerView()
         getLocationInWindow(mOriginCoords)
         mKeyPreviewChoreographer.placeAndShowKeyPreview(
-            key, keyboard.mIconsSet, getKeyDrawParams(),
+            key, keyboard.mIconsSet, keyDrawParams,
             mOriginCoords, mDrawingPreviewPlacerView, isHardwareAccelerated()
         )
     }
@@ -393,7 +390,7 @@ class MainKeyboardView @JvmOverloads constructor(
             return
         }
         // TODO: Implement preference option to control key preview method and duration.
-        mTimerHandler.postDismissKeyPreview(key, mKeyPreviewDrawParams.getLingerTimeout().toLong())
+        mTimerHandler.postDismissKeyPreview(key, mKeyPreviewDrawParams.lingerTimeout.toLong())
     }
 
     override fun onAttachedToWindow() {
@@ -412,7 +409,7 @@ class MainKeyboardView @JvmOverloads constructor(
         key: Key,
         tracker: PointerTracker
     ): MoreKeysPanel? {
-        val moreKeys: Array<MoreKeySpec?>? = key.getMoreKeys()
+        val moreKeys: Array<MoreKeySpec?>? = key.moreKeys
         if (moreKeys == null) {
             return null
         }
@@ -423,12 +420,12 @@ class MainKeyboardView @JvmOverloads constructor(
             // though there may be some chances that the value is zero. <code>width == 0</code>
             // will cause zero-division error at
             // {@link MoreKeysKeyboardParams#setParameters(int,int,int,int,int,int,boolean,int)}.
-            val isSingleMoreKeyWithPreview: Boolean = mKeyPreviewDrawParams.isPopupEnabled()
-                    && !key.noKeyPreview() && moreKeys.size == 1 && mKeyPreviewDrawParams.getVisibleWidth() > 0
+            val isSingleMoreKeyWithPreview: Boolean = mKeyPreviewDrawParams.isPopupEnabled
+                    && !key.noKeyPreview() && moreKeys.size == 1 && mKeyPreviewDrawParams.visibleWidth > 0
             val builder: MoreKeysKeyboard.Builder = MoreKeysKeyboard.Builder(
-                getContext(), key, getKeyboard(), isSingleMoreKeyWithPreview,
-                mKeyPreviewDrawParams.getVisibleWidth(),
-                mKeyPreviewDrawParams.getVisibleHeight(), newLabelPaint(key)
+                getContext(), key, keyboard!!, isSingleMoreKeyWithPreview,
+                mKeyPreviewDrawParams.visibleWidth,
+                mKeyPreviewDrawParams.visibleHeight, newLabelPaint(key)
             )
             moreKeysKeyboard = builder.build()
             mMoreKeysKeyboardCache.put(key, moreKeysKeyboard)
@@ -436,7 +433,7 @@ class MainKeyboardView @JvmOverloads constructor(
 
         val moreKeysKeyboardView: MoreKeysKeyboardView =
             mMoreKeysKeyboardContainer.findViewById(R.id.more_keys_keyboard_view)
-        moreKeysKeyboardView.setKeyboard(moreKeysKeyboard)
+        moreKeysKeyboardView.keyboard = moreKeysKeyboard
         mMoreKeysKeyboardContainer.measure(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -444,7 +441,7 @@ class MainKeyboardView @JvmOverloads constructor(
 
         val lastCoords: IntArray = CoordinateUtils.newInstance()
         tracker.getLastCoordinates(lastCoords)
-        val keyPreviewEnabled: Boolean = mKeyPreviewDrawParams.isPopupEnabled()
+        val keyPreviewEnabled: Boolean = mKeyPreviewDrawParams.isPopupEnabled
                 && !key.noKeyPreview()
         // The more keys keyboard is usually horizontally aligned with the center of the parent key.
         // If showMoreKeysKeyboardAtTouchedPoint is true and the key preview is disabled, the more
@@ -452,13 +449,13 @@ class MainKeyboardView @JvmOverloads constructor(
         val pointX: Int = if ((mConfigShowMoreKeysKeyboardAtTouchedPoint && !keyPreviewEnabled))
             CoordinateUtils.x(lastCoords)
         else
-            key.getX() + key.getWidth() / 2
+            key.x + key.width / 2
         // The more keys keyboard is usually vertically aligned with the top edge of the parent key
         // (plus vertical gap). If the key preview is enabled, the more keys keyboard is vertically
         // aligned with the bottom edge of the visible part of the key preview.
         // {@code mPreviewVisibleOffset} has been set appropriately in
         // {@link KeyboardView#showKeyPreview(PointerTracker)}.
-        val pointY: Int = (key.getY() + mKeyPreviewDrawParams.getVisibleOffset()
+        val pointY: Int = (key.y + mKeyPreviewDrawParams.visibleOffset
                 + Math.round(moreKeysKeyboard.mBottomPadding))
         moreKeysKeyboardView.showMoreKeysPanel(this, this, pointX, pointY, mKeyboardActionListener)
         return moreKeysKeyboardView
@@ -469,7 +466,7 @@ class MainKeyboardView @JvmOverloads constructor(
             if (isShowingMoreKeysPanel) {
                 return true
             }
-            return PointerTracker.Companion.isAnyInDraggingFinger()
+            return PointerTracker.isAnyInDraggingFinger
         }
 
     override fun onShowMoreKeysPanel(panel: MoreKeysPanel) {
@@ -477,7 +474,7 @@ class MainKeyboardView @JvmOverloads constructor(
         // Dismiss another {@link MoreKeysPanel} that may be being showed.
         onDismissMoreKeysPanel()
         // Dismiss all key previews that may be being showed.
-        PointerTracker.Companion.setReleasedKeyGraphicsToAllKeys()
+        PointerTracker.setReleasedKeyGraphicsToAllKeys()
         // Dismiss sliding key input preview that may be being showed.
         panel.showInParent(mDrawingPreviewPlacerView)
         mMoreKeysPanel = panel
@@ -485,11 +482,11 @@ class MainKeyboardView @JvmOverloads constructor(
 
     val isShowingMoreKeysPanel: Boolean
         get() {
-            return mMoreKeysPanel != null && mMoreKeysPanel!!.isShowingInParent()
+            return mMoreKeysPanel != null && mMoreKeysPanel!!.isShowingInParent
         }
 
     override fun onCancelMoreKeysPanel() {
-        PointerTracker.Companion.dismissAllMoreKeysPanels()
+        PointerTracker.dismissAllMoreKeysPanels()
     }
 
     override fun onDismissMoreKeysPanel() {
@@ -509,15 +506,15 @@ class MainKeyboardView @JvmOverloads constructor(
 
     val isInDoubleTapShiftKeyTimeout: Boolean
         get() {
-            return mTimerHandler.isInDoubleTapShiftKeyTimeout()
+            return mTimerHandler.isInDoubleTapShiftKeyTimeout
         }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (getKeyboard() == null) {
+        if (keyboard == null) {
             return false
         }
         if (mNonDistinctMultitouchHelper != null) {
-            if (event.getPointerCount() > 1 && mTimerHandler.isInKeyRepeat()) {
+            if (event.getPointerCount() > 1 && mTimerHandler.isInKeyRepeat) {
                 // Key repeating timer will be canceled if 2 or more keys are in action.
                 mTimerHandler.cancelKeyRepeatTimers()
             }
@@ -531,11 +528,11 @@ class MainKeyboardView @JvmOverloads constructor(
     fun processMotionEvent(event: MotionEvent): Boolean {
         val index: Int = event.getActionIndex()
         val id: Int = event.getPointerId(index)
-        val tracker: PointerTracker = PointerTracker.Companion.getPointerTracker(id)
+        val tracker: PointerTracker = PointerTracker.getPointerTracker(id)
         // When a more keys panel is showing, we should ignore other fingers' single touch events
         // other than the finger that is showing the more keys panel.
-        if (isShowingMoreKeysPanel && !tracker.isShowingMoreKeysPanel()
-            && PointerTracker.Companion.getActivePointerTrackerCount() == 1
+        if (isShowingMoreKeysPanel && !tracker.isShowingMoreKeysPanel
+            && PointerTracker.activePointerTrackerCount == 1
         ) {
             return true
         }
@@ -545,9 +542,9 @@ class MainKeyboardView @JvmOverloads constructor(
 
     fun cancelAllOngoingEvents() {
         mTimerHandler.cancelAllMessages()
-        PointerTracker.Companion.setReleasedKeyGraphicsToAllKeys()
-        PointerTracker.Companion.dismissAllMoreKeysPanels()
-        PointerTracker.Companion.cancelAllPointerTrackers()
+        PointerTracker.setReleasedKeyGraphicsToAllKeys()
+        PointerTracker.dismissAllMoreKeysPanels()
+        PointerTracker.cancelAllPointerTrackers()
     }
 
     fun closing() {
@@ -564,7 +561,7 @@ class MainKeyboardView @JvmOverloads constructor(
         languageOnSpacebarFormatType: Int
     ) {
         if (subtypeChanged) {
-            KeyPreviewView.Companion.clearTextCache()
+            KeyPreviewView.clearTextCache()
         }
         mLanguageOnSpacebarFormatType = languageOnSpacebarFormatType
         val animator: ObjectAnimator? = mLanguageOnSpacebarFadeoutAnimator
@@ -596,10 +593,10 @@ class MainKeyboardView @JvmOverloads constructor(
             params.mAnimAlpha = mAltCodeKeyWhileTypingAnimAlpha
         }
         super.onDrawKeyTopVisuals(key, canvas, paint, params)
-        val code: Int = key.getCode()
+        val code: Int = key.code
         if (code == Constants.CODE_SPACE) {
             // If more than one language is enabled in current input method
-            val imm: RichInputMethodManager = RichInputMethodManager.Companion.getInstance()
+            val imm: RichInputMethodManager = RichInputMethodManager.instance
             if (imm.hasMultipleEnabledSubtypes()) {
                 drawLanguageOnSpacebar(key, canvas, paint)
             }
@@ -631,14 +628,14 @@ class MainKeyboardView @JvmOverloads constructor(
         // Choose appropriate language name to fit into the width.
         if (mLanguageOnSpacebarFormatType == LanguageOnSpacebarUtils.FORMAT_TYPE_FULL_LOCALE) {
             val fullText: String =
-                LocaleResourceUtils.getLocaleDisplayNameInLocale(subtype.getLocale())
+                LocaleResourceUtils.getLocaleDisplayNameInLocale(subtype.locale)
             if (fitsTextIntoWidth(width, fullText, paint)) {
                 return fullText
             }
         }
 
         val middleText: String =
-            LocaleResourceUtils.getLanguageDisplayNameInLocale(subtype.getLocale())
+            LocaleResourceUtils.getLanguageDisplayNameInLocale(subtype.locale)
         if (fitsTextIntoWidth(width, middleText, paint)) {
             return middleText
         }
@@ -647,12 +644,12 @@ class MainKeyboardView @JvmOverloads constructor(
     }
 
     private fun drawLanguageOnSpacebar(key: Key, canvas: Canvas, paint: Paint) {
-        val keyboard: Keyboard? = getKeyboard()
+        val keyboard: Keyboard? = keyboard
         if (keyboard == null) {
             return
         }
-        val width: Int = key.getWidth()
-        val height: Int = key.getHeight()
+        val width: Int = key.width
+        val height: Int = key.height
         paint.setTextAlign(Align.CENTER)
         paint.setTypeface(Typeface.DEFAULT)
         paint.setTextSize(mLanguageOnSpacebarTextSize)

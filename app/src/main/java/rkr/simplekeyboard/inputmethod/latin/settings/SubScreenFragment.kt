@@ -37,7 +37,7 @@ abstract class SubScreenFragment : PreferenceFragment(), OnSharedPreferenceChang
         setPreferenceEnabled(prefKey, enabled, preferenceScreen)
     }
 
-    val sharedPreferences: SharedPreferences?
+    val sharedPreferences: SharedPreferences
         get() = PreferenceManagerCompat.getDeviceSharedPreferences(activity)
 
     override fun addPreferencesFromResource(preferencesResId: Int) {
@@ -97,7 +97,7 @@ abstract class SubScreenFragment : PreferenceFragment(), OnSharedPreferenceChang
         }
 
         @JvmOverloads
-        fun removePreference(prefKey: String?, screen: PreferenceScreen = getPreferenceScreen()) {
+        fun removePreference(prefKey: String?, screen: PreferenceScreen) {
             val preference = screen.findPreference(prefKey)
             if (preference != null) {
                 screen.removePreference(preference)

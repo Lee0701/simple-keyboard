@@ -37,7 +37,7 @@ class Event private constructor(// The type of event - one of the constants abov
     // is of KEYPRESS type, but for a mode key like hankaku/zenkaku or ctrl, there is no code point
     // associated so this should be NOT_A_CODE_POINT to avoid unintentional use of its value when
     // it's not relevant.
-    val mCodePoint: Int,
+    var mCodePoint: Int,
     keyCode: Int,
     x: Int,
     y: Int,

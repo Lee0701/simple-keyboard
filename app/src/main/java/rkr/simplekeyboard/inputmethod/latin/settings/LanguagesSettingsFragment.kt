@@ -46,17 +46,17 @@ import java.util.TreeSet
  */
 class LanguagesSettingsFragment : PreferenceFragment() {
     private var mRichImm: RichInputMethodManager? = null
-    private var mUsedLocaleNames: Array<CharSequence?>
-    private var mUsedLocaleValues: Array<String?>
-    private var mUnusedLocaleNames: Array<CharSequence?>
-    private var mUnusedLocaleValues: Array<String?>
+    private var mUsedLocaleNames: Array<CharSequence?> = arrayOf()
+    private var mUsedLocaleValues: Array<String?> = arrayOf()
+    private var mUnusedLocaleNames: Array<CharSequence?> = arrayOf()
+    private var mUnusedLocaleValues: Array<String?> = arrayOf()
     private var mAlertDialog: AlertDialog? = null
     private var mView: View? = null
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        RichInputMethodManager.Companion.init(activity)
-        mRichImm = RichInputMethodManager.Companion.getInstance()
+        RichInputMethodManager.init(activity)
+        mRichImm = RichInputMethodManager.instance
 
         addPreferencesFromResource(R.xml.empty_settings)
 
@@ -120,7 +120,7 @@ class LanguagesSettingsFragment : PreferenceFragment() {
         languageCategory.setTitle(R.string.user_languages)
         group.addPreference(languageCategory)
 
-        val comparator: Comparator<Locale?> = LocaleComparator()
+        val comparator: Comparator<Locale> = LocaleComparator()
         val enabledSubtypes = mRichImm!!.getEnabledSubtypes(false)
         val usedLocales = getUsedLocales(enabledSubtypes, comparator)
         val unusedLocales: SortedSet<Locale> = getUnusedLocales(usedLocales, comparator)
@@ -137,9 +137,9 @@ class LanguagesSettingsFragment : PreferenceFragment() {
      */
     private fun getUsedLocales(
         subtypes: Set<Subtype>,
-        comparator: Comparator<Locale?>
-    ): SortedSet<Locale?> {
-        val locales: SortedSet<Locale?> = TreeSet(comparator)
+        comparator: Comparator<Locale>
+    ): SortedSet<Locale> {
+        val locales: SortedSet<Locale> = TreeSet(comparator)
 
         for (subtype in subtypes) {
             if (DEBUG_SUBTYPE_ID) {
@@ -165,13 +165,13 @@ class LanguagesSettingsFragment : PreferenceFragment() {
      * @return a set of locales for the unused languages sorted using the specified comparator.
      */
     private fun getUnusedLocales(
-        usedLocales: Set<Locale?>,
-        comparator: Comparator<Locale?>
-    ): SortedSet<Locale?> {
-        val locales: SortedSet<Locale?> = TreeSet(comparator)
-        for (localeString in SubtypeLocaleUtils.getSupportedLocales()) {
+        usedLocales: Set<Locale>,
+        comparator: Comparator<Locale>
+    ): SortedSet<Locale> {
+        val locales: SortedSet<Locale> = TreeSet(comparator)
+        for (localeString in SubtypeLocaleUtils.supportedLocales) {
             val locale = LocaleUtils.constructLocaleFromString(
-                localeString!!
+                localeString
             )
             if (usedLocales.contains(locale)) {
                 continue
@@ -299,7 +299,7 @@ class LanguagesSettingsFragment : PreferenceFragment() {
         listener: OnMultiChoiceDialogAcceptListener
     ) {
         val checkedItems = BooleanArray(names.size)
-        mAlertDialog = AlertDialog.Builder(activity)
+        val mAlertDialog = AlertDialog.Builder(activity)
             .setTitle(titleRes)
             .setMultiChoiceItems(
                 names, checkedItems
@@ -334,6 +334,7 @@ class LanguagesSettingsFragment : PreferenceFragment() {
         mAlertDialog.show()
         // disable the positive button since nothing is checked by default
         mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        this.mAlertDialog = mAlertDialog
     }
 
     /**
@@ -371,7 +372,7 @@ class LanguagesSettingsFragment : PreferenceFragment() {
             if (mExtras == null) {
                 mExtras = Bundle()
                 mExtras!!.putString(
-                    SingleLanguageSettingsFragment.Companion.LOCALE_BUNDLE_KEY,
+                    SingleLanguageSettingsFragment.LOCALE_BUNDLE_KEY,
                     mLocale
                 )
             }

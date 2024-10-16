@@ -240,7 +240,7 @@ object SubtypeLocaleUtils {
      * @return the list of subtypes for the specified locale.
      */
     fun getSubtypes(locale: String?, resources: Resources): List<Subtype> {
-        return SubtypeBuilder(locale, true, resources).getSubtypes()
+        return SubtypeBuilder(locale, true, resources).subtypes
     }
 
     /**
@@ -250,7 +250,7 @@ object SubtypeLocaleUtils {
      * @return the default subtype for the specified locale or null if the locale isn't supported.
      */
     fun getDefaultSubtype(locale: String?, resources: Resources): Subtype? {
-        val subtypes: List<Subtype> = SubtypeBuilder(locale, true, resources).getSubtypes()
+        val subtypes: List<Subtype> = SubtypeBuilder(locale, true, resources).subtypes
         return if (subtypes.size == 0) null else subtypes[0]
     }
 
@@ -266,7 +266,7 @@ object SubtypeLocaleUtils {
         resources: Resources
     ): Subtype? {
         val subtypes: List<Subtype> =
-            SubtypeBuilder(locale, layoutSet, resources).getSubtypes()
+            SubtypeBuilder(locale, layoutSet, resources).subtypes
         return if (subtypes.size == 0) null else subtypes[0]
     }
 
@@ -275,24 +275,24 @@ object SubtypeLocaleUtils {
      * @param resources the resources to use.
      * @return the default list of subtypes based on the system's languages.
      */
-    fun getDefaultSubtypes(resources: Resources): MutableList<Subtype?> {
+    fun getDefaultSubtypes(resources: Resources): MutableList<Subtype> {
         val supportedLocales = ArrayList<Locale?>(sSupportedLocales.size)
         for (localeString in sSupportedLocales) {
             supportedLocales.add(LocaleUtils.constructLocaleFromString(localeString))
         }
 
-        val systemLocales = LocaleUtils.getSystemLocales()
+        val systemLocales = LocaleUtils.systemLocales
 
-        val subtypes = ArrayList<Subtype?>()
+        val subtypes = ArrayList<Subtype>()
         val addedLocales = HashSet<Locale>()
         for (systemLocale in systemLocales) {
             val bestLocale = LocaleUtils.findBestLocale(
-                systemLocale!!, supportedLocales
+                systemLocale, supportedLocales
             )
             if (bestLocale != null && !addedLocales.contains(bestLocale)) {
                 addedLocales.add(bestLocale)
                 val bestLocaleString = LocaleUtils.getLocaleString(bestLocale)
-                subtypes.add(getDefaultSubtype(bestLocaleString, resources))
+                subtypes.add(getDefaultSubtype(bestLocaleString, resources)!!)
             }
         }
         if (subtypes.size == 0) {
@@ -356,6 +356,7 @@ object SubtypeLocaleUtils {
              * @return the list of subtypes that were built.
              */
             get() {
+                var mSubtypes = mSubtypes
                 if (mSubtypes != null) {
                     // in case this gets called again for some reason, the subtypes should only be built
                     // once
@@ -471,6 +472,7 @@ object SubtypeLocaleUtils {
                     LOCALE_THAI -> addLayout(LAYOUT_THAI)
                     LOCALE_URDU -> addLayout(LAYOUT_URDU)
                 }
+                this.mSubtypes = mSubtypes
                 return mSubtypes
             }
 

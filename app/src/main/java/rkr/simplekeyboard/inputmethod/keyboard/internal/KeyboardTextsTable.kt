@@ -25,11 +25,9 @@ object KeyboardTextsTable {
     // Locale to texts table map.
     private val sLocaleToTextsTableMap: HashMap<String, Array<String>> = HashMap()
 
-    fun getText(name: String, textsTable: Array<String?>): String {
-        val indexObj: Int? = sNameToIndexesMap.get(name)
-        if (indexObj == null) {
-            throw RuntimeException("Unknown text name=" + name)
-        }
+    fun getText(name: String, textsTable: Array<String>): String {
+        val indexObj: Int = sNameToIndexesMap.get(name)
+            ?: throw RuntimeException("Unknown text name=" + name)
         val index: Int = indexObj
         val text: String? = if ((index < textsTable.size)) textsTable.get(index) else null
         if (text != null) {

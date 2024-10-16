@@ -164,7 +164,7 @@ object StringUtils {
             val codePoint = Character.codePointAt(charSequence, index)
             // TODO: stop using this, as it's not aware of the locale and does not always do
             // the right thing.
-            destination[destIndex] = if (downCase) codePoint.lowercaseChar() else codePoint
+            destination[destIndex] = if (downCase) codePoint.toChar().lowercase().toInt() else codePoint
             destIndex++
             index = Character.offsetByCodePoints(charSequence, index, 1)
         }

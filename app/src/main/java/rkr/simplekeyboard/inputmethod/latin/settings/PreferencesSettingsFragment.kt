@@ -41,18 +41,18 @@ class PreferencesSettingsFragment : SubScreenFragment() {
         addPreferencesFromResource(R.xml.prefs_screen_preferences)
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            removePreference(Settings.Companion.PREF_ENABLE_IME_SWITCH)
+            removePreference(Settings.PREF_ENABLE_IME_SWITCH, preferenceScreen)
         } else {
             updateImeSwitchEnabledPref()
         }
     }
 
-    override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
-        if (key == Settings.Companion.PREF_HIDE_SPECIAL_CHARS ||
-            key == Settings.Companion.PREF_SHOW_NUMBER_ROW
+    override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String?) {
+        if (key == Settings.PREF_HIDE_SPECIAL_CHARS ||
+            key == Settings.PREF_SHOW_NUMBER_ROW
         ) {
-            KeyboardLayoutSet.Companion.onKeyboardThemeChanged()
-        } else if (key == Settings.Companion.PREF_HIDE_LANGUAGE_SWITCH_KEY) {
+            KeyboardLayoutSet.onKeyboardThemeChanged()
+        } else if (key == Settings.PREF_HIDE_LANGUAGE_SWITCH_KEY) {
             updateImeSwitchEnabledPref()
         }
     }
@@ -62,9 +62,9 @@ class PreferencesSettingsFragment : SubScreenFragment() {
      * language switch key.
      */
     private fun updateImeSwitchEnabledPref() {
-        val enableImeSwitch = findPreference(Settings.Companion.PREF_ENABLE_IME_SWITCH)
+        val enableImeSwitch = findPreference(Settings.PREF_ENABLE_IME_SWITCH)
         val hideLanguageSwitchKey =
-            findPreference(Settings.Companion.PREF_HIDE_LANGUAGE_SWITCH_KEY)
+            findPreference(Settings.PREF_HIDE_LANGUAGE_SWITCH_KEY)
         if (enableImeSwitch == null || hideLanguageSwitchKey == null) {
             return
         }

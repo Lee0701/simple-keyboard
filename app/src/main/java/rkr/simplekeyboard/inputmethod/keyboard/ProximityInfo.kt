@@ -32,7 +32,7 @@ class ProximityInfo internal constructor(
     private val mKeyboardMinWidth: Int
     private val mKeyboardHeight: Int
     private val mSortedKeys: List<Key>
-    private val mGridNeighbors: Array<List<Key?>>
+    private val mGridNeighbors: Array<List<Key?>?>
 
     init {
         mGridWidth = gridWidth
@@ -43,12 +43,12 @@ class ProximityInfo internal constructor(
         mKeyboardMinWidth = minWidth
         mKeyboardHeight = height
         mSortedKeys = sortedKeys
-        mGridNeighbors = arrayOfNulls<List<*>>(mGridSize)
+        mGridNeighbors = arrayOfNulls(mGridSize)
         if (minWidth == 0 || height == 0) {
             // No proximity required. Keyboard might be more keys keyboard.
-            return
+        } else {
+            computeNearestNeighbors()
         }
-        computeNearestNeighbors()
     }
 
     private fun computeNearestNeighbors() {
@@ -67,20 +67,20 @@ class ProximityInfo internal constructor(
         val neighborsFlatBuffer: Array<Key?> = arrayOfNulls(gridSize * keyCount)
         val neighborCountPerCell: IntArray = IntArray(gridSize)
         for (key: Key in mSortedKeys) {
-            if (key.isSpacer()) continue
+            if (key.isSpacer) continue
 
             // Iterate through all of the cells that overlap with the clickable region of the
             // current key and add the key as a neighbor.
-            val keyX: Int = key.getX()
-            val keyY: Int = key.getY()
-            val keyTop: Int = keyY - key.getTopPadding()
+            val keyX: Int = key.x
+            val keyY: Int = key.y
+            val keyTop: Int = keyY - key.topPadding
             val keyBottom: Int = min(
-                (keyY + key.getHeight() + key.getBottomPadding()).toDouble(),
+                (keyY + key.height + key.bottomPadding).toDouble(),
                 maxKeyBottom.toDouble()
             ).toInt()
-            val keyLeft: Int = keyX - key.getLeftPadding()
+            val keyLeft: Int = keyX - key.leftPadding
             val keyRight: Int = min(
-                (keyX + key.getWidth() + key.getRightPadding()).toDouble(),
+                (keyX + key.width + key.rightPadding).toDouble(),
                 maxKeyRight.toDouble()
             ).toInt()
             val yDeltaToGrid: Int = keyTop % mCellHeight
@@ -94,9 +94,9 @@ class ProximityInfo internal constructor(
                 var index: Int = baseIndexOfCurrentRow
                 var cellLeft: Int = xStart
                 while (cellLeft < keyRight) {
-                    neighborsFlatBuffer.get(index * keyCount + neighborCountPerCell.get(index)) =
+                    neighborsFlatBuffer[index * keyCount + neighborCountPerCell.get(index)] =
                         key
-                    ++neighborCountPerCell.get(index)
+                    ++neighborCountPerCell[index]
                     ++index
                     cellLeft += mCellWidth
                 }
@@ -112,15 +112,15 @@ class ProximityInfo internal constructor(
             for (index in indexStart until indexEnd) {
                 neighbors.add(neighborsFlatBuffer.get(index))
             }
-            mGridNeighbors.get(i) = Collections.unmodifiableList(neighbors)
+            mGridNeighbors[i] = Collections.unmodifiableList(neighbors)
         }
     }
 
-    fun getNearestKeys(x: Int, y: Int): List<Key?> {
+    fun getNearestKeys(x: Int, y: Int): List<Key?>? {
         if (x >= 0 && x < mKeyboardMinWidth && y >= 0 && y < mKeyboardHeight) {
             val index: Int = (y / mCellHeight) * mGridWidth + (x / mCellWidth)
             if (index < mGridSize) {
-                return mGridNeighbors.get(index)
+                return mGridNeighbors[index]
             }
         }
         return EMPTY_KEY_LIST

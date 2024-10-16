@@ -93,7 +93,7 @@ object LocaleUtils {
      */
     fun findBestLocale(
         localeToMatch: Locale,
-        options: Collection<Locale>
+        options: Collection<Locale?>
     ): Locale? {
         // Find the best subtype based on a straightforward matching algorithm.
         // TODO: Use LocaleList#getFirstMatch() instead.
@@ -103,22 +103,22 @@ object LocaleUtils {
             }
         }
         for (locale in options) {
-            if (locale.language == localeToMatch.language &&
-                locale.country == localeToMatch.country &&
-                locale.variant == localeToMatch.variant
+            if (locale?.language == localeToMatch.language &&
+                locale?.country == localeToMatch.country &&
+                locale?.variant == localeToMatch.variant
             ) {
                 return locale
             }
         }
         for (locale in options) {
-            if (locale.language == localeToMatch.language &&
-                locale.country == localeToMatch.country
+            if (locale?.language == localeToMatch.language &&
+                locale?.country == localeToMatch.country
             ) {
                 return locale
             }
         }
         for (locale in options) {
-            if (locale.language == localeToMatch.language) {
+            if (locale?.language == localeToMatch.language) {
                 return locale
             }
         }

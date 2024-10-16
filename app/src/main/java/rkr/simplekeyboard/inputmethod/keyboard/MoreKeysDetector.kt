@@ -30,16 +30,13 @@ class MoreKeysDetector(slideAllowance: Float) : KeyDetector() {
     }
 
     override fun detectHitKey(x: Int, y: Int): Key? {
-        val keyboard: Keyboard? = getKeyboard()
-        if (keyboard == null) {
-            return null
-        }
+        val keyboard: Keyboard = keyboard ?: return null
         val touchX: Int = getTouchX(x)
         val touchY: Int = getTouchY(y)
 
         var nearestKey: Key? = null
         var nearestDist: Int = if ((y < 0)) mSlideAllowanceSquareTop else mSlideAllowanceSquare
-        for (key: Key in keyboard.getSortedKeys()) {
+        for (key: Key in keyboard.sortedKeys) {
             val dist: Int = key.squaredDistanceToHitboxEdge(touchX, touchY)
             if (dist < nearestDist) {
                 nearestKey = key

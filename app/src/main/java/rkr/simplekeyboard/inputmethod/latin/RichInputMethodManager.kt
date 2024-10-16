@@ -121,8 +121,8 @@ class RichInputMethodManager private constructor() {
         init {
             mPrefs = PreferenceManagerCompat.getDeviceSharedPreferences(context)
 
-            val prefSubtypes: String = Settings.Companion.readPrefSubtypes(mPrefs)
-            val subtypes: MutableList<Subtype?> = SubtypePreferenceUtils.createSubtypesFromPref(
+            val prefSubtypes: String = Settings.readPrefSubtypes(mPrefs)
+            val subtypes: MutableList<Subtype> = SubtypePreferenceUtils.createSubtypesFromPref(
                 prefSubtypes, context.getResources()
             )
             if (subtypes == null || subtypes.size < 1) {
@@ -160,7 +160,7 @@ class RichInputMethodManager private constructor() {
                 val locales: MutableSet<Locale?> =
                     HashSet()
                 for (subtype: Subtype in mSubtypes!!) {
-                    locales.add(subtype.getLocaleObject())
+                    locales.add(subtype.localeObject)
                 }
                 return locales
             }
@@ -174,7 +174,7 @@ class RichInputMethodManager private constructor() {
         fun getAllForLocale(locale: String?): Set<Subtype> {
             val subtypes: MutableSet<Subtype> = HashSet()
             for (subtype: Subtype in mSubtypes!!) {
-                if (subtype.getLocale() == locale) subtypes.add(subtype)
+                if (subtype.locale == locale) subtypes.add(subtype)
             }
             return subtypes
         }
@@ -195,7 +195,7 @@ class RichInputMethodManager private constructor() {
                             // ensure that this is consistent with equals
                             return 0
                         }
-                        val result: Int = a.getName().compareTo(b.getName(), ignoreCase = true)
+                        val result: Int = a.name.compareTo(b.name, ignoreCase = true)
                         if (result != 0) {
                             return result
                         }
@@ -225,7 +225,7 @@ class RichInputMethodManager private constructor() {
          */
         fun saveSubtypeListPref() {
             val prefSubtypes: String = SubtypePreferenceUtils.createPrefSubtypes(mSubtypes)
-            Settings.Companion.writePrefSubtypes(
+            Settings.writePrefSubtypes(
                 mPrefs!!, prefSubtypes
             )
         }
@@ -237,7 +237,8 @@ class RichInputMethodManager private constructor() {
          */
         @Synchronized
         fun addSubtype(subtype: Subtype): Boolean {
-            if (mSubtypes!!.contains(subtype)) {
+            val mSubtypes = mSubtypes!!
+            if (mSubtypes.contains(subtype)) {
                 // don't allow duplicates, but since it's already in the list this can be considered
                 // successful
                 return true
@@ -256,7 +257,8 @@ class RichInputMethodManager private constructor() {
          */
         @Synchronized
         fun removeSubtype(subtype: Subtype): Boolean {
-            if (mSubtypes!!.size == 1) {
+            val mSubtypes = mSubtypes!!
+            if (mSubtypes.size == 1) {
                 // there needs to be at least one subtype
                 return false
             }
@@ -313,11 +315,12 @@ class RichInputMethodManager private constructor() {
          */
         @Synchronized
         fun setCurrentSubtype(subtype: Subtype?): Boolean {
-            if (getCurrentSubtype() == subtype) {
+            if (currentSubtype == subtype) {
                 // nothing to do
                 return true
             }
-            for (i in mSubtypes!!.indices) {
+            val mSubtypes = mSubtypes!!
+            for (i in mSubtypes.indices) {
                 if (mSubtypes.get(i) == subtype) {
                     setCurrentSubtype(i)
                     return true
@@ -333,18 +336,19 @@ class RichInputMethodManager private constructor() {
          */
         @Synchronized
         fun setCurrentSubtype(locale: Locale): Boolean {
+            val mSubtypes = mSubtypes!!
             val enabledLocales: ArrayList<Locale?> = ArrayList(
-                mSubtypes!!.size
+                mSubtypes.size
             )
             for (subtype: Subtype in mSubtypes) {
-                enabledLocales.add(subtype.getLocaleObject())
+                enabledLocales.add(subtype.localeObject)
             }
             val bestLocale: Locale? = LocaleUtils.findBestLocale(locale, enabledLocales)
             if (bestLocale != null) {
                 // get the first subtype (most recently used) with a matching locale
                 for (i in mSubtypes.indices) {
                     val subtype: Subtype = mSubtypes.get(i)
-                    if (bestLocale == subtype.getLocaleObject()) {
+                    if (bestLocale == subtype.localeObject) {
                         setCurrentSubtype(i)
                         return true
                     }
@@ -421,7 +425,7 @@ class RichInputMethodManager private constructor() {
          * @return the enabled languages.
          */
         get() {
-            return mSubtypeList.getAllLocales()
+            return mSubtypeList!!.allLocales
         }
 
     /**
@@ -524,7 +528,7 @@ class RichInputMethodManager private constructor() {
          * @return the current subtype.
          */
         get() {
-            return mSubtypeList.getCurrentSubtype()
+            return mSubtypeList!!.currentSubtype
         }
 
     /**
@@ -594,7 +598,7 @@ class RichInputMethodManager private constructor() {
                 Spannable.SPAN_EXCLUSIVE_INCLUSIVE
             )
 
-            items.get(i++) = SpannableStringBuilder().append(itemTitle).append(itemSubtitle)
+            items[i++] = SpannableStringBuilder().append(itemTitle).append(itemSubtitle)
         }
         val listener: DialogInterface.OnClickListener = object : DialogInterface.OnClickListener {
             override fun onClick(di: DialogInterface, position: Int) {
@@ -673,7 +677,7 @@ class RichInputMethodManager private constructor() {
                 for (subtype: Subtype in getEnabledSubtypes(true)) {
                     val subtypeInfo: SubtypeInfo = SubtypeInfo()
                     subtypeInfo.virtualSubtype = subtype
-                    subtypeInfo.subtypeName = subtype.getName()
+                    subtypeInfo.subtypeName = subtype.name
                     subtypeInfo.imeName = imeName
                     subtypeInfo.imiId = imiId
                     subtypeInfoList.add(subtypeInfo)

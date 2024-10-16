@@ -42,11 +42,11 @@ class KeyPressSettingsFragment : SubScreenFragment() {
         // When we are called from the Settings application but we are not already running, some
         // singleton and utility classes may not have been initialized.  We have to call
         // initialization method of these classes here. See {@link LatinIME#onCreate()}.
-        AudioAndHapticFeedbackManager.Companion.init(context)
+        AudioAndHapticFeedbackManager.init(context)
 
-        if (!AudioAndHapticFeedbackManager.Companion.getInstance().hasVibrator()) {
-            removePreference(Settings.Companion.PREF_VIBRATE_ON)
-            removePreference(Settings.Companion.PREF_VIBRATION_DURATION_SETTINGS)
+        if (!AudioAndHapticFeedbackManager.instance.hasVibrator()) {
+            removePreference(Settings.PREF_VIBRATE_ON, preferenceScreen)
+            removePreference(Settings.PREF_VIBRATION_DURATION_SETTINGS, preferenceScreen)
         }
 
         setupKeypressVibrationDurationSettings()
@@ -56,7 +56,7 @@ class KeyPressSettingsFragment : SubScreenFragment() {
 
     private fun setupKeypressVibrationDurationSettings() {
         val pref = findPreference(
-            Settings.Companion.PREF_VIBRATION_DURATION_SETTINGS
+            Settings.PREF_VIBRATION_DURATION_SETTINGS
         ) as SeekBarDialogPreference
         if (pref == null) {
             return
@@ -73,17 +73,17 @@ class KeyPressSettingsFragment : SubScreenFragment() {
             }
 
             override fun readValue(key: String?): Int {
-                return Settings.Companion.readKeypressVibrationDuration(
+                return Settings.readKeypressVibrationDuration(
                     prefs!!, res
                 )
             }
 
             override fun readDefaultValue(key: String?): Int {
-                return Settings.Companion.readDefaultKeypressVibrationDuration(res)
+                return Settings.readDefaultKeypressVibrationDuration(res)
             }
 
             override fun feedbackValue(value: Int) {
-                AudioAndHapticFeedbackManager.Companion.getInstance().vibrate(value.toLong())
+                AudioAndHapticFeedbackManager.instance.vibrate(value.toLong())
             }
 
             override fun getValueText(value: Int): String {
@@ -97,7 +97,7 @@ class KeyPressSettingsFragment : SubScreenFragment() {
 
     private fun setupKeypressSoundVolumeSettings() {
         val pref = findPreference(
-            Settings.Companion.PREF_KEYPRESS_SOUND_VOLUME
+            Settings.PREF_KEYPRESS_SOUND_VOLUME
         ) as SeekBarDialogPreference
         if (pref == null) {
             return
@@ -126,14 +126,14 @@ class KeyPressSettingsFragment : SubScreenFragment() {
 
             override fun readValue(key: String?): Int {
                 return getPercentageFromValue(
-                    Settings.Companion.readKeypressSoundVolume(
+                    Settings.readKeypressSoundVolume(
                         prefs!!, res
                     )
                 )
             }
 
             override fun readDefaultValue(key: String?): Int {
-                return getPercentageFromValue(Settings.Companion.readDefaultKeypressSoundVolume(res))
+                return getPercentageFromValue(Settings.readDefaultKeypressSoundVolume(res))
             }
 
             override fun getValueText(value: Int): String {
@@ -155,7 +155,7 @@ class KeyPressSettingsFragment : SubScreenFragment() {
         val prefs = sharedPreferences
         val res = resources
         val pref = findPreference(
-            Settings.Companion.PREF_KEY_LONGPRESS_TIMEOUT
+            Settings.PREF_KEY_LONGPRESS_TIMEOUT
         ) as SeekBarDialogPreference
         if (pref == null) {
             return
@@ -170,13 +170,13 @@ class KeyPressSettingsFragment : SubScreenFragment() {
             }
 
             override fun readValue(key: String?): Int {
-                return Settings.Companion.readKeyLongpressTimeout(
+                return Settings.readKeyLongpressTimeout(
                     prefs!!, res
                 )
             }
 
             override fun readDefaultValue(key: String?): Int {
-                return Settings.Companion.readDefaultKeyLongpressTimeout(res)
+                return Settings.readDefaultKeyLongpressTimeout(res)
             }
 
             override fun getValueText(value: Int): String {

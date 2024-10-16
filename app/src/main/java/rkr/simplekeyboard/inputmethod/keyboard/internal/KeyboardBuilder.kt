@@ -111,7 +111,7 @@ import java.util.Locale
 </pre> *
  */
 // TODO: Write unit tests for this class.
-open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
+open class KeyboardBuilder<KP : KeyboardParams>(context: Context, params: KP) {
     protected val mParams: KP
     protected val mContext: Context
     protected val mResources: Resources
@@ -276,7 +276,7 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
                 R.styleable.Keyboard_rowHeight, baseHeight, baseHeight / DEFAULT_KEYBOARD_ROWS
             )
 
-            params.mKeyVisualAttributes = KeyVisualAttributes.Companion.newInstance(keyAttr)
+            params.mKeyVisualAttributes = KeyVisualAttributes.newInstance(keyAttr)
 
             params.mMoreKeysTemplate = keyboardAttr.getResourceId(
                 R.styleable.Keyboard_moreKeysTemplate, 0
@@ -286,7 +286,7 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
             )
 
             params.mIconsSet.loadIcons(keyboardAttr)
-            params.mTextsSet.setLocale(params.mId.getLocale(), mContext)
+            params.mTextsSet.setLocale(params.mId?.locale!!, mContext)
         } finally {
             keyAttr.recycle()
             keyboardAttr.recycle()
@@ -407,7 +407,7 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
         )
         keyAttr.recycle()
         if (DEBUG) {
-            startEndTag("<%s %s moreKeys=%s />", TAG_KEY, key, key.getMoreKeys().contentToString())
+            startEndTag("<%s %s moreKeys=%s />", TAG_KEY, key, key.moreKeys.contentToString())
         }
         XmlParseUtils.checkEndTag(TAG_KEY, parser)
         endKey(key, row)
@@ -616,21 +616,21 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
             val keyboardLayoutSetMatched: Boolean = matchString(
                 caseAttr,
                 R.styleable.Keyboard_Case_keyboardLayoutSet,
-                id.mSubtype.getKeyboardLayoutSet()
+                id.mSubtype?.keyboardLayoutSet
             )
             val keyboardLayoutSetElementMatched: Boolean = matchTypedValue(
                 caseAttr,
                 R.styleable.Keyboard_Case_keyboardLayoutSetElement, id.mElementId,
-                KeyboardId.Companion.elementIdToName(id.mElementId)
+                KeyboardId.elementIdToName(id.mElementId)
             )
             val keyboardThemeMatched: Boolean = matchTypedValue(
                 caseAttr,
                 R.styleable.Keyboard_Case_keyboardTheme, id.mThemeId,
-                KeyboardTheme.Companion.getKeyboardThemeName(id.mThemeId)
+                KeyboardTheme.getKeyboardThemeName(id.mThemeId)
             )
             val modeMatched: Boolean = matchTypedValue(
                 caseAttr,
-                R.styleable.Keyboard_Case_mode, id.mMode, KeyboardId.Companion.modeName(id.mMode)
+                R.styleable.Keyboard_Case_mode, id.mMode, KeyboardId.modeName(id.mMode)
             )
             val navigateNextMatched: Boolean = matchBoolean(
                 caseAttr,
@@ -655,7 +655,7 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
             )
             val isMultiLineMatched: Boolean = matchBoolean(
                 caseAttr,
-                R.styleable.Keyboard_Case_isMultiLine, id.isMultiLine()
+                R.styleable.Keyboard_Case_isMultiLine, id.isMultiLine
             )
             val imeActionMatched: Boolean = matchInteger(
                 caseAttr,
@@ -665,7 +665,7 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
                 caseAttr,
                 R.styleable.Keyboard_Case_isIconDefined, mParams.mIconsSet
             )
-            val locale: Locale? = id.getLocale()
+            val locale: Locale? = id.locale
             val localeCodeMatched: Boolean = matchLocaleCodes(
                 caseAttr,
                 locale!!
@@ -759,27 +759,27 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
         if (mCurrentRow == null) {
             throw RuntimeException("orphan end row tag")
         }
-        if (mPreviousKeyInRow != null && !mPreviousKeyInRow!!.isSpacer()) {
+        if (mPreviousKeyInRow != null && !mPreviousKeyInRow!!.isSpacer) {
             setKeyHitboxRightEdge(mPreviousKeyInRow!!, mParams!!.mOccupiedWidth.toFloat())
             mPreviousKeyInRow = null
         }
-        mCurrentY += row.getRowHeight()
+        mCurrentY += row.rowHeight
         mCurrentRow = null
     }
 
     private fun endKey(key: Key, row: KeyboardRow) {
         mParams!!.onAddKey(key)
-        if (mPreviousKeyInRow != null && !mPreviousKeyInRow!!.isSpacer()) {
+        if (mPreviousKeyInRow != null && !mPreviousKeyInRow!!.isSpacer) {
             // Make the last key span the gap so there isn't un-clickable space. The current key's
             // hitbox left edge is based on the previous key, so this will make the gap between
             // them split evenly.
-            setKeyHitboxRightEdge(mPreviousKeyInRow!!, row.getKeyX() - row.getKeyLeftPadding())
+            setKeyHitboxRightEdge(mPreviousKeyInRow!!, row.keyX - row.keyLeftPadding)
         }
         mPreviousKeyInRow = key
     }
 
     private fun setKeyHitboxRightEdge(key: Key, xPos: Float) {
-        val keyRight: Int = key.getX() + key.getWidth()
+        val keyRight: Int = key.x + key.width
         val padding: Float = xPos - keyRight
         key.setHitboxRightEdge(Math.round(padding) + keyRight)
     }
@@ -885,7 +885,7 @@ open class KeyboardBuilder<KP : KeyboardParams?>(context: Context, params: KP) {
                 return true
             }
             val iconName: String? = a.getString(index)
-            val iconId: Int = KeyboardIconsSet.Companion.getIconId(iconName)
+            val iconId: Int = KeyboardIconsSet.getIconId(iconName)
             return iconsSet.getIconDrawable(iconId) != null
         }
     }

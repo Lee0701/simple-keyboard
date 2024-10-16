@@ -118,15 +118,15 @@ class KeyPreviewChoreographer(params: KeyPreviewDrawParams) {
             mParams.mMinPreviewWidth.toDouble()
         ).toInt()
         val previewHeight: Int = mParams.mPreviewHeight
-        val keyWidth: Int = key.getWidth()
+        val keyWidth: Int = key.width
         // The key preview is horizontally aligned with the center of the visible part of the
         // parent key. If it doesn't fit in this {@link KeyboardView}, it is moved inward to fit and
         // the left/right background is used if such background is specified.
-        val previewX: Int = (key.getX() - (previewWidth - keyWidth) / 2
+        val previewX: Int = (key.x - (previewWidth - keyWidth) / 2
                 + CoordinateUtils.x(originCoords))
         // The key preview is placed vertically above the top edge of the parent key with an
         // arbitrary offset.
-        val previewY: Int = (key.getY() - previewHeight + mParams.mPreviewOffset
+        val previewY: Int = (key.y - previewHeight + mParams.mPreviewOffset
                 + CoordinateUtils.y(originCoords))
 
         ViewLayoutUtils.placeViewAt(

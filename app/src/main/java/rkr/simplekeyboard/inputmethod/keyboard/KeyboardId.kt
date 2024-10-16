@@ -106,7 +106,7 @@ class KeyboardId(elementId: Int, params: KeyboardLayoutSet.Params) {
 
     val locale: Locale?
         get() {
-            return mSubtype.getLocaleObject()
+            return mSubtype?.localeObject
         }
 
     override fun equals(other: Any?): Boolean {
@@ -121,8 +121,8 @@ class KeyboardId(elementId: Int, params: KeyboardLayoutSet.Params) {
         return String.format(
             Locale.ROOT, "[%s %s:%s %dx%d +%d %s %s%s%s%s%s%s %s]",
             elementIdToName(mElementId),
-            mSubtype.getLocale(),
-            mSubtype.getKeyboardLayoutSet(),
+            mSubtype?.locale,
+            mSubtype?.keyboardLayoutSet,
             mWidth, mHeight, mBottomOffset,
             modeName(mMode),
             actionName(imeAction()),
@@ -132,7 +132,7 @@ class KeyboardId(elementId: Int, params: KeyboardLayoutSet.Params) {
             (if (passwordInput()) " passwordInput" else ""),
             (if (mLanguageSwitchKeyEnabled) " languageSwitchKeyEnabled" else ""),
             (if (isMultiLine) " isMultiLine" else ""),
-            KeyboardTheme.Companion.getKeyboardThemeName(mThemeId)
+            KeyboardTheme.getKeyboardThemeName(mThemeId)
         )
     }
 

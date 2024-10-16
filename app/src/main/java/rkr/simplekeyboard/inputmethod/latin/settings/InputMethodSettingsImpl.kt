@@ -34,8 +34,8 @@ internal class InputMethodSettingsImpl {
      * @return true if this application is an IME and has two or more subtypes, false otherwise.
      */
     fun init(context: Context, prefScreen: PreferenceScreen): Boolean {
-        RichInputMethodManager.Companion.init(context)
-        mRichImm = RichInputMethodManager.Companion.getInstance()
+        RichInputMethodManager.init(context)
+        mRichImm = RichInputMethodManager.instance
 
         mSubtypeEnablerPreference = Preference(context)
         mSubtypeEnablerPreference!!.setTitle(R.string.select_language)

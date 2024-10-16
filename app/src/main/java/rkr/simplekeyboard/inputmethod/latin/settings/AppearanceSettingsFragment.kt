@@ -30,7 +30,7 @@ class AppearanceSettingsFragment : SubScreenFragment() {
         addPreferencesFromResource(R.xml.prefs_screen_appearance)
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            removePreference(Settings.Companion.PREF_MATCHING_NAVBAR_COLOR)
+            removePreference(Settings.PREF_MATCHING_NAVBAR_COLOR, preferenceScreen)
         }
 
         setupKeyboardHeightSettings()
@@ -48,18 +48,18 @@ class AppearanceSettingsFragment : SubScreenFragment() {
     }
 
     private fun refreshSettings() {
-        ThemeSettingsFragment.Companion.updateKeyboardThemeSummary(findPreference(Settings.Companion.SCREEN_THEME))
+        ThemeSettingsFragment.updateKeyboardThemeSummary(findPreference(Settings.SCREEN_THEME))
 
         val prefs = sharedPreferences
-        val theme: KeyboardTheme = KeyboardTheme.Companion.getKeyboardTheme(prefs!!)
-        val isSystemTheme = theme.mThemeId != KeyboardTheme.Companion.THEME_ID_SYSTEM
-                && theme.mThemeId != KeyboardTheme.Companion.THEME_ID_SYSTEM_BORDER
-        setPreferenceEnabled(Settings.Companion.PREF_KEYBOARD_COLOR, isSystemTheme)
+        val theme: KeyboardTheme? = KeyboardTheme.getKeyboardTheme(prefs!!)
+        val isSystemTheme = theme?.mThemeId != KeyboardTheme.THEME_ID_SYSTEM
+                && theme?.mThemeId != KeyboardTheme.THEME_ID_SYSTEM_BORDER
+        setPreferenceEnabled(Settings.PREF_KEYBOARD_COLOR, isSystemTheme)
     }
 
     private fun setupKeyboardHeightSettings() {
         val pref = findPreference(
-            Settings.Companion.PREF_KEYBOARD_HEIGHT
+            Settings.PREF_KEYBOARD_HEIGHT
         ) as SeekBarDialogPreference
         if (pref == null) {
             return
@@ -87,7 +87,7 @@ class AppearanceSettingsFragment : SubScreenFragment() {
 
             override fun readValue(key: String?): Int {
                 return getPercentageFromValue(
-                    Settings.Companion.readKeyboardHeight(
+                    Settings.readKeyboardHeight(
                         prefs!!, 1f
                     )
                 )
@@ -101,7 +101,7 @@ class AppearanceSettingsFragment : SubScreenFragment() {
                 if (value < 0) {
                     return res.getString(R.string.settings_system_default)
                 }
-                return res.getString(R.string.abbreviation_unit_percent, value)
+                return res.getString(R.string.abbreviation_unit_percent, value.toString())
             }
 
             override fun feedbackValue(value: Int) {}
@@ -110,7 +110,7 @@ class AppearanceSettingsFragment : SubScreenFragment() {
 
     private fun setupBottomOffsetPortraitSettings() {
         val pref = findPreference(
-            Settings.Companion.PREF_BOTTOM_OFFSET_PORTRAIT
+            Settings.PREF_BOTTOM_OFFSET_PORTRAIT
         ) as SeekBarDialogPreference
         if (pref == null) {
             return
@@ -127,13 +127,13 @@ class AppearanceSettingsFragment : SubScreenFragment() {
             }
 
             override fun readValue(key: String?): Int {
-                return Settings.Companion.readBottomOffsetPortrait(
+                return Settings.readBottomOffsetPortrait(
                     prefs!!
                 )
             }
 
             override fun readDefaultValue(key: String?): Int {
-                return Settings.Companion.DEFAULT_BOTTOM_OFFSET
+                return Settings.DEFAULT_BOTTOM_OFFSET
             }
 
             override fun getValueText(value: Int): String {
@@ -149,7 +149,7 @@ class AppearanceSettingsFragment : SubScreenFragment() {
 
     private fun setupKeyboardColorSettings() {
         val pref = findPreference(
-            Settings.Companion.PREF_KEYBOARD_COLOR
+            Settings.PREF_KEYBOARD_COLOR
         ) as ColorDialogPreference
         if (pref == null) {
             return
@@ -162,13 +162,13 @@ class AppearanceSettingsFragment : SubScreenFragment() {
             }
 
             override fun readValue(key: String?): Int {
-                return Settings.Companion.readKeyboardColor(
+                return Settings.readKeyboardColor(
                     prefs!!, context
                 )
             }
 
             override fun writeDefaultValue(key: String?) {
-                Settings.Companion.removeKeyboardColor(
+                Settings.removeKeyboardColor(
                     prefs!!
                 )
             }

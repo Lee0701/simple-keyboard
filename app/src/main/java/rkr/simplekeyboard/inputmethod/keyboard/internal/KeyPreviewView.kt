@@ -46,8 +46,8 @@ class KeyPreviewView @JvmOverloads constructor(
         drawParams: KeyDrawParams
     ) {
         // What we show as preview should match what we show on a key top in onDraw().
-        val iconId: Int = key.getIconId()
-        if (iconId != KeyboardIconsSet.Companion.ICON_UNDEFINED) {
+        val iconId: Int = key.iconId
+        if (iconId != KeyboardIconsSet.ICON_UNDEFINED) {
             setCompoundDrawables(null, null, null, key.getPreviewIcon(iconsSet))
             setText(null)
             return
@@ -58,7 +58,7 @@ class KeyPreviewView @JvmOverloads constructor(
         setTextSize(TypedValue.COMPLEX_UNIT_PX, key.selectPreviewTextSize(drawParams).toFloat())
         setTypeface(key.selectPreviewTypeface(drawParams))
         // TODO Should take care of temporaryShiftLabel here.
-        setTextAndScaleX(key.getPreviewLabel())
+        setTextAndScaleX(key.previewLabel)
     }
 
     private fun setTextAndScaleX(text: String?) {

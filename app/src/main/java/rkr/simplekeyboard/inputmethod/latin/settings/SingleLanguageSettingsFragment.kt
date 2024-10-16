@@ -39,8 +39,8 @@ class SingleLanguageSettingsFragment : PreferenceFragment() {
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
 
-        RichInputMethodManager.Companion.init(activity)
-        mRichImm = RichInputMethodManager.Companion.getInstance()
+        RichInputMethodManager.init(activity)
+        mRichImm = RichInputMethodManager.instance
         addPreferencesFromResource(R.xml.empty_settings)
     }
 
@@ -91,11 +91,11 @@ class SingleLanguageSettingsFragment : PreferenceFragment() {
         val subtypes =
             SubtypeLocaleUtils.getSubtypes(locale, context.resources)
         mSubtypePreferences = ArrayList()
-        for (subtype in subtypes!!) {
+        for (subtype in subtypes) {
             val isChecked = enabledSubtypes.contains(subtype)
             val pref = createSubtypePreference(subtype, isChecked, context)
             group.addPreference(pref)
-            mSubtypePreferences.add(pref)
+            mSubtypePreferences?.add(pref)
         }
 
         // if there is only one subtype that is checked, the preference for it should be disabled to
@@ -130,12 +130,12 @@ class SingleLanguageSettingsFragment : PreferenceFragment() {
                 }
                 val pref = preference as SubtypePreference
                 val checkedPrefs: List<SubtypePreference> =
-                    this.checkedSubtypePreferences
+                    this@SingleLanguageSettingsFragment.checkedSubtypePreferences
                 if (checkedPrefs.size == 1) {
                     checkedPrefs[0].isEnabled = false
                 }
                 if (newValue) {
-                    val added = mRichImm!!.addSubtype(pref.getSubtype())
+                    val added = mRichImm!!.addSubtype(pref.subtype)
                     // if only one subtype was checked before, the preference would have been
                     // disabled, but now that there are two, it can be enabled to allow it to be
                     // unchecked
@@ -144,7 +144,7 @@ class SingleLanguageSettingsFragment : PreferenceFragment() {
                     }
                     return added
                 } else {
-                    val removed = mRichImm!!.removeSubtype(pref.getSubtype())
+                    val removed = mRichImm!!.removeSubtype(pref.subtype)
                     // if there is going to be only one subtype that is checked, the preference for
                     // it should be disabled to prevent all of the subtypes for the language from
                     // being removed

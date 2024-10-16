@@ -79,7 +79,7 @@ class InputLogic(latinIME: LatinIME) {
         val text = performSpecificTldProcessingOnTextInput(rawText)
         mConnection.commitText(text, 1)
         // Space state must be updated before calling updateShiftState
-        inputTransaction.requireShiftUpdate(InputTransaction.Companion.SHIFT_UPDATE_NOW)
+        inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW)
         return inputTransaction
     }
 
@@ -164,7 +164,7 @@ class InputLogic(latinIME: LatinIME) {
             Constants.CODE_DELETE -> handleBackspaceEvent(event, inputTransaction)
             Constants.CODE_SHIFT -> {
                 performRecapitalization(inputTransaction.mSettingsValues)
-                inputTransaction.requireShiftUpdate(InputTransaction.Companion.SHIFT_UPDATE_NOW)
+                inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW)
             }
 
             Constants.CODE_CAPSLOCK -> {}
@@ -266,7 +266,7 @@ class InputLogic(latinIME: LatinIME) {
     private fun handleSeparatorEvent(event: Event, inputTransaction: InputTransaction) {
         sendKeyCodePoint(event.mCodePoint)
 
-        inputTransaction.requireShiftUpdate(InputTransaction.Companion.SHIFT_UPDATE_NOW)
+        inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW)
     }
 
     /**
@@ -284,9 +284,9 @@ class InputLogic(latinIME: LatinIME) {
         // can't go any further back, so we can update right away even if it's a key repeat.
         val shiftUpdateKind: Int =
             if (event.isKeyRepeat && mConnection.expectedSelectionStart > 0)
-                InputTransaction.Companion.SHIFT_UPDATE_LATER
+                InputTransaction.SHIFT_UPDATE_LATER
             else
-                InputTransaction.Companion.SHIFT_UPDATE_NOW
+                InputTransaction.SHIFT_UPDATE_NOW
         inputTransaction.requireShiftUpdate(shiftUpdateKind)
 
         sendDownUpKeyEvent(KeyEvent.KEYCODE_DEL)
@@ -360,10 +360,10 @@ class InputLogic(latinIME: LatinIME) {
      * @return a caps mode from TextUtils.CAP_MODE_* or Constants.TextUtils.CAP_MODE_OFF.
      */
     fun getCurrentAutoCapsState(
-        settingsValues: SettingsValues,
+        settingsValues: SettingsValues?,
         layoutSetName: String
     ): Int {
-        if (!settingsValues.mAutoCap || !layoutUsesAutoCaps(layoutSetName)) {
+        if (settingsValues?.mAutoCap != true || !layoutUsesAutoCaps(layoutSetName)) {
             return Constants.TextUtils.CAP_MODE_OFF
         }
 
@@ -391,7 +391,7 @@ class InputLogic(latinIME: LatinIME) {
                 )
             ) {
                 // Not recapitalizing at the moment
-                return RecapitalizeStatus.Companion.NOT_A_RECAPITALIZE_MODE
+                return RecapitalizeStatus.NOT_A_RECAPITALIZE_MODE
             }
             return mRecapitalizeStatus.currentMode
         }
