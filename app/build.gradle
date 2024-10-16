@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     defaultConfig {
@@ -16,6 +17,9 @@ android {
         }
     }
     namespace 'rkr.simplekeyboard.inputmethod'
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
