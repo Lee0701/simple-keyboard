@@ -37,7 +37,7 @@ import java.util.Locale
  */
 // TODO: Should extend the key specification object.
 class MoreKeySpec(
-    moreKeySpec: String, needsToUpperCase: Boolean,
+    moreKeySpec: String?, needsToUpperCase: Boolean,
     locale: Locale?
 ) {
     var mCode: Int = 0
@@ -122,7 +122,7 @@ class MoreKeySpec(
     }
 
     init {
-        if (moreKeySpec.isEmpty()) {
+        if (moreKeySpec.isNullOrEmpty()) {
             throw KeySpecParserError("Empty more key spec")
         }
         val label: String? = KeySpecParser.getLabel(moreKeySpec)

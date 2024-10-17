@@ -105,7 +105,7 @@ open class Key : Comparable<Key> {
     private val mHitbox: Rect = Rect()
 
     /** More keys. It is guaranteed that this is null or an array of one or more elements  */
-    val moreKeys: Array<MoreKeySpec?>?
+    val moreKeys: Array<MoreKeySpec?>
 
     /** More keys column number and flags  */
     private val mMoreKeysColumnAndFlags: Int
@@ -166,7 +166,7 @@ open class Key : Comparable<Key> {
         mBackgroundType = backgroundType
         // TODO: Pass keyActionFlags as an argument.
         mActionFlags = ACTION_FLAGS_NO_KEY_PREVIEW
-        moreKeys = null
+        moreKeys = emptyArray()
         mMoreKeysColumnAndFlags = 0
         this.label = label
         mOptionalAttributes = OptionalAttributes.newInstance(outputText, Constants.CODE_UNSPECIFIED)
@@ -226,7 +226,7 @@ open class Key : Comparable<Key> {
         mLabelFlags = (style.getFlags(keyAttr, R.styleable.Keyboard_Key_keyLabelFlags)
                 or row.defaultKeyLabelFlags)
         val needsToUpcase: Boolean = needsToUpcase(mLabelFlags, params.mId!!.mElementId)
-        val localeForUpcasing: Locale? = params.mId!!.locale
+        val localeForUpcasing: Locale? = params.mId?.locale
         var actionFlags: Int = style.getFlags(keyAttr, R.styleable.Keyboard_Key_keyActionFlags)
         var moreKeys: Array<String?>? =
             style.getStringArray(keyAttr, R.styleable.Keyboard_Key_moreKeys)
@@ -273,12 +273,9 @@ open class Key : Comparable<Key> {
         moreKeys = MoreKeySpec.insertAdditionalMoreKeys(moreKeys, additionalMoreKeys)
         if (moreKeys != null) {
             actionFlags = actionFlags or ACTION_FLAGS_ENABLE_LONG_PRESS
-            this.moreKeys = arrayOfNulls(moreKeys.size)
-            for (i in moreKeys.indices) {
-                moreKeys[i] = MoreKeySpec(moreKeys[i]!!, needsToUpcase, localeForUpcasing).toString()
-            }
+            this.moreKeys = moreKeys.map { MoreKeySpec(it, needsToUpcase, localeForUpcasing) }.toTypedArray()
         } else {
-            this.moreKeys = null
+            this.moreKeys = emptyArray()
         }
         mActionFlags = actionFlags
 
@@ -393,7 +390,7 @@ open class Key : Comparable<Key> {
         x = key.x
         y = key.y
         mHitbox.set(key.mHitbox)
-        this.moreKeys = moreKeys
+        this.moreKeys = emptyArray()
         mMoreKeysColumnAndFlags = key.mMoreKeysColumnAndFlags
         mBackgroundType = key.mBackgroundType
         mActionFlags = key.mActionFlags

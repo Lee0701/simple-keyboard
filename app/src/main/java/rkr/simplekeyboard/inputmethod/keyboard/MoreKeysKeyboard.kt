@@ -385,11 +385,11 @@ class MoreKeysKeyboard internal constructor(params: MoreKeysKeyboardParams) : Ke
         }
 
         override fun build(): MoreKeysKeyboard {
-            val params: MoreKeysKeyboardParams = mParams!!
+            val params: MoreKeysKeyboardParams = mParams
             val moreKeyFlags: Int = mParentKey.moreKeyLabelFlags
             val moreKeys: Array<MoreKeySpec?>? = mParentKey.moreKeys
             for (n in moreKeys!!.indices) {
-                val moreKeySpec: MoreKeySpec? = moreKeys.get(n)
+                val moreKeySpec: MoreKeySpec? = moreKeys[n]
                 val row: Int = n / params.mNumColumns
                 val width: Float = params.mDefaultKeyPaddedWidth - params.mHorizontalGap
                 val height: Float = params.mDefaultRowHeight - params.mVerticalGap
@@ -421,7 +421,7 @@ class MoreKeysKeyboard internal constructor(params: MoreKeysKeyboardParams) : Ke
                     else
                         params.mVerticalGap / 2
 
-                val key: Key = moreKeySpec!!.buildKey(
+                val key = moreKeySpec?.buildKey(
                     keyLeftEdge, keyTopEdge, width, height,
                     keyLeftPadding, keyRightPadding, keyTopPadding, keyBottomPadding,
                     moreKeyFlags

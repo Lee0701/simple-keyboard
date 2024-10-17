@@ -71,14 +71,13 @@ open class KeyboardParams @JvmOverloads constructor(keysCache: UniqueKeysCache =
     var mMostCommonKeyWidth: Int = 0
 
     fun onAddKey(newKey: Key?) {
-        val key: Key? = mUniqueKeysCache.getUniqueKey(newKey)
-        val isSpacer: Boolean = key!!.isSpacer
-        if (isSpacer && key.width == 0) {
+        val key: Key = mUniqueKeysCache.getUniqueKey(newKey) ?: return
+        if (key.isSpacer && key.width == 0) {
             // Ignore zero width {@link Spacer}.
             return
         }
         mSortedKeys.add(key)
-        if (isSpacer) {
+        if (key.isSpacer) {
             return
         }
         updateHistogram(key)
