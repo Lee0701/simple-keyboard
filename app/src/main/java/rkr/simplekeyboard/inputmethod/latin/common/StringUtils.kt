@@ -23,10 +23,11 @@ object StringUtils {
     private const val EMPTY_STRING = ""
 
     fun codePointCount(text: CharSequence?): Int {
+        if(text == null) return 0
         if (TextUtils.isEmpty(text)) {
             return 0
         }
-        return Character.codePointCount(text, 0, text!!.length)
+        return Character.codePointCount(text, 0, text.length)
     }
 
     fun newSingleCodePointString(codePoint: Int): String {

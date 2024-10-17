@@ -38,41 +38,27 @@ class Event private constructor(// The type of event - one of the constants abov
     // associated so this should be NOT_A_CODE_POINT to avoid unintentional use of its value when
     // it's not relevant.
     var mCodePoint: Int,
-    keyCode: Int,
-    x: Int,
-    y: Int,
-    flags: Int,
-    next: Event?
-) {
+
     // The key code associated with the event, if relevant. This is relevant whenever this event
     // has been triggered by a key press, but not for a gesture for example. This has conceptually
     // no link to the code point, although keys that enter a straight code point may often set
     // this to be equal to mCodePoint for convenience. If this is not a key, this must contain
     // NOT_A_KEY_CODE.
-    val mKeyCode: Int
+    val mKeyCode: Int,
 
     // Coordinates of the touch event, if relevant. If useful, we may want to replace this with
     // a MotionEvent or something in the future. This is only relevant when the keypress is from
     // a software keyboard obviously, unless there are touch-sensitive hardware keyboards in the
     // future or some other awesome sauce.
-    val mX: Int
-    val mY: Int
+    val mX: Int,
+    val mY: Int,
 
     // Some flags that can't go into the key code. It's a bit field of FLAG_*
-    private val mFlags: Int
+    private val mFlags: Int,
 
     // The next event, if any. Null if there is no next event yet.
     val mNextEvent: Event?
-
-    // This method is private - to create a new event, use one of the create* utility methods.
-    init {
-        mKeyCode = keyCode
-        mX = x
-        mY = y
-        mFlags = flags
-        mNextEvent = next
-    }
-
+) {
     val isFunctionalKeyEvent: Boolean
         // Returns whether this is a function key like backspace, ctrl, settings... as opposed to keys
         get() =// This logic may need to be refined in the future

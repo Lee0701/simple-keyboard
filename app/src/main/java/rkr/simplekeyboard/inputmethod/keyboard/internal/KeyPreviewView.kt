@@ -95,10 +95,10 @@ class KeyPreviewView @JvmOverloads constructor(
             if (TextUtils.isEmpty(text)) {
                 return 0.0f
             }
-            val len: Int = text!!.length
-            val widths: FloatArray = FloatArray(len)
-            val count: Int = paint.getTextWidths(text, 0, len, widths)
-            var width: Float = 0f
+            val len = text.orEmpty().length
+            val widths = FloatArray(len)
+            val count = paint.getTextWidths(text, 0, len, widths)
+            var width = 0f
             for (i in 0 until count) {
                 width += widths.get(i)
             }
