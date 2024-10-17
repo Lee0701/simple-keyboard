@@ -56,7 +56,7 @@ class LanguagesSettingsFragment : PreferenceFragment() {
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
         RichInputMethodManager.init(activity)
-        mRichImm = RichInputMethodManager.instance
+        mRichImm = RichInputMethodManager
 
         addPreferencesFromResource(R.xml.empty_settings)
 

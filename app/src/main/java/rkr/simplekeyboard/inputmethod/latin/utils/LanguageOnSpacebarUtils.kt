@@ -32,7 +32,7 @@ object LanguageOnSpacebarUtils {
         val keyboardLayout = subtype.keyboardLayoutSet
         var sameLanguageAndLayoutCount = 0
         val enabledSubtypes: Set<Subtype> =
-            RichInputMethodManager.instance.getEnabledSubtypes(false)
+            RichInputMethodManager.getEnabledSubtypes(false)
         for (enabledSubtype in enabledSubtypes) {
             val language = enabledSubtype.localeObject?.language
             if (keyboardLanguage == language

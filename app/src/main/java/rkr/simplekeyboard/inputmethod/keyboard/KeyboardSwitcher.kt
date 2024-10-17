@@ -61,7 +61,7 @@ class KeyboardSwitcher private constructor() : SwitchActions {
 
     private fun initInternal(latinIme: LatinIME) {
         mLatinIME = latinIme
-        mRichImm = RichInputMethodManager.instance
+        mRichImm = RichInputMethodManager
         mState = KeyboardState(this)
     }
 

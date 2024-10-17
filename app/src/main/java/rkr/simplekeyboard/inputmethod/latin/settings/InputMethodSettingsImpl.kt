@@ -35,7 +35,7 @@ internal class InputMethodSettingsImpl {
      */
     fun init(context: Context, prefScreen: PreferenceScreen): Boolean {
         RichInputMethodManager.init(context)
-        mRichImm = RichInputMethodManager.instance
+        mRichImm = RichInputMethodManager
 
         mSubtypeEnablerPreference = Preference(context)
         mSubtypeEnablerPreference!!.setTitle(R.string.select_language)

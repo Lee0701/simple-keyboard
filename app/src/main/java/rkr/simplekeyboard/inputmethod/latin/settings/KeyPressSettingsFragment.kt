@@ -44,7 +44,7 @@ class KeyPressSettingsFragment : SubScreenFragment() {
         // initialization method of these classes here. See {@link LatinIME#onCreate()}.
         AudioAndHapticFeedbackManager.init(context)
 
-        if (!AudioAndHapticFeedbackManager.instance.hasVibrator()) {
+        if (!AudioAndHapticFeedbackManager.hasVibrator()) {
             removePreference(Settings.PREF_VIBRATE_ON, preferenceScreen)
             removePreference(Settings.PREF_VIBRATION_DURATION_SETTINGS, preferenceScreen)
         }
@@ -83,7 +83,7 @@ class KeyPressSettingsFragment : SubScreenFragment() {
             }
 
             override fun feedbackValue(value: Int) {
-                AudioAndHapticFeedbackManager.instance.vibrate(value.toLong())
+                AudioAndHapticFeedbackManager.vibrate(value.toLong())
             }
 
             override fun getValueText(value: Int): String {

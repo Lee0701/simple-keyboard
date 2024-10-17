@@ -29,34 +29,34 @@ import rkr.simplekeyboard.inputmethod.latin.settings.SettingsValues
  * It offers a consistent and simple interface that allows LatinIME to forget about the
  * complexity of settings and the like.
  */
-class AudioAndHapticFeedbackManager private constructor() {
+object AudioAndHapticFeedbackManager {
     private var mAudioManager: AudioManager? = null
     private var mVibrator: Vibrator? = null
 
     private var mSettingsValues: SettingsValues? = null
     private var mSoundOn: Boolean = false
 
-    private fun initInternal(context: Context) {
+    fun init(context: Context) {
         mAudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager?
         mVibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
     }
 
     fun hasVibrator(): Boolean {
-        return mVibrator != null && mVibrator!!.hasVibrator()
+        return mVibrator != null && mVibrator?.hasVibrator() == true
     }
 
     fun vibrate(milliseconds: Long) {
         if (mVibrator == null) {
             return
         }
-        mVibrator!!.vibrate(milliseconds)
+        mVibrator?.vibrate(milliseconds)
     }
 
     private fun reevaluateIfSoundIsOn(): Boolean {
-        if (mSettingsValues == null || !mSettingsValues!!.mSoundOn || mAudioManager == null) {
+        if (mSettingsValues == null || mSettingsValues?.mSoundOn != true || mAudioManager == null) {
             return false
         }
-        return mAudioManager!!.getRingerMode() == AudioManager.RINGER_MODE_NORMAL
+        return mAudioManager?.getRingerMode() == AudioManager.RINGER_MODE_NORMAL
     }
 
     fun performAudioFeedback(code: Int) {
@@ -74,24 +74,22 @@ class AudioAndHapticFeedbackManager private constructor() {
             Constants.CODE_SPACE -> sound = AudioManager.FX_KEYPRESS_SPACEBAR
             else -> sound = AudioManager.FX_KEYPRESS_STANDARD
         }
-        mAudioManager!!.playSoundEffect(sound, mSettingsValues!!.mKeypressSoundVolume)
+        mAudioManager?.playSoundEffect(sound, mSettingsValues?.mKeypressSoundVolume ?: 0f)
     }
 
     fun performHapticFeedback(viewToPerformHapticFeedbackOn: View?) {
-        if (!mSettingsValues!!.mVibrateOn) {
+        if (mSettingsValues?.mVibrateOn != true) {
             return
         }
-        if (mSettingsValues!!.mKeypressVibrationDuration >= 0) {
+        if ((mSettingsValues?.mKeypressVibrationDuration ?: 0) >= 0) {
             vibrate(mSettingsValues!!.mKeypressVibrationDuration.toLong())
             return
         }
         // Go ahead with the system default
-        if (viewToPerformHapticFeedbackOn != null) {
-            viewToPerformHapticFeedbackOn.performHapticFeedback(
-                HapticFeedbackConstants.KEYBOARD_TAP,
-                HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
-            )
-        }
+        viewToPerformHapticFeedbackOn?.performHapticFeedback(
+            HapticFeedbackConstants.KEYBOARD_TAP,
+            HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+        )
     }
 
     fun onSettingsChanged(settingsValues: SettingsValues?) {
@@ -101,13 +99,5 @@ class AudioAndHapticFeedbackManager private constructor() {
 
     fun onRingerModeChanged() {
         mSoundOn = reevaluateIfSoundIsOn()
-    }
-
-    companion object {
-        val instance: AudioAndHapticFeedbackManager = AudioAndHapticFeedbackManager()
-
-        fun init(context: Context) {
-            instance.initInternal(context)
-        }
     }
 }

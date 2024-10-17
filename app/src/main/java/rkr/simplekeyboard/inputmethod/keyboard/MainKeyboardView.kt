@@ -596,7 +596,7 @@ class MainKeyboardView @JvmOverloads constructor(
         val code: Int = key.code
         if (code == Constants.CODE_SPACE) {
             // If more than one language is enabled in current input method
-            val imm: RichInputMethodManager = RichInputMethodManager.instance
+            val imm: RichInputMethodManager = RichInputMethodManager
             if (imm.hasMultipleEnabledSubtypes()) {
                 drawLanguageOnSpacebar(key, canvas, paint)
             }

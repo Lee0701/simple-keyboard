@@ -223,7 +223,7 @@ class RichInputConnection(parent: InputMethodService) {
      * @param newCursorPosition The new cursor position around the text.
      */
     fun commitText(text: CharSequence, newCursorPosition: Int) {
-        RichInputMethodManager.instance.resetSubtypeCycleOrder()
+        RichInputMethodManager.resetSubtypeCycleOrder()
         if (DEBUG_BATCH_NESTING) checkBatchEdit()
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug()
         mCommittedTextBeforeComposingText.append(text)
@@ -392,7 +392,7 @@ class RichInputConnection(parent: InputMethodService) {
     }
 
     fun replaceText(startPosition: Int, endPosition: Int, text: CharSequence?) {
-        RichInputMethodManager.instance.resetSubtypeCycleOrder()
+        RichInputMethodManager.resetSubtypeCycleOrder()
         mIC!!.setComposingRegion(startPosition, endPosition)
         mIC!!.setComposingText(text, startPosition)
         mIC!!.finishComposingText()
@@ -406,7 +406,7 @@ class RichInputConnection(parent: InputMethodService) {
     }
 
     fun sendKeyEvent(keyEvent: KeyEvent) {
-        RichInputMethodManager.instance.resetSubtypeCycleOrder()
+        RichInputMethodManager.resetSubtypeCycleOrder()
         if (DEBUG_BATCH_NESTING) checkBatchEdit()
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
             if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug()
@@ -484,7 +484,7 @@ class RichInputConnection(parent: InputMethodService) {
         if (expectedSelectionStart == start && expectedSelectionEnd == end) {
             return
         }
-        RichInputMethodManager.instance.resetSubtypeCycleOrder()
+        RichInputMethodManager.resetSubtypeCycleOrder()
 
         expectedSelectionStart = start
         expectedSelectionEnd = end

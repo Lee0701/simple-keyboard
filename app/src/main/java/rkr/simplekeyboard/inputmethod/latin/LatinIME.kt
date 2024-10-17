@@ -292,7 +292,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
         Settings.init(this)
         DebugFlags.init(PreferenceManagerCompat.getDeviceSharedPreferences(this))
         RichInputMethodManager.init(this)
-        mRichImm = RichInputMethodManager.instance
+        mRichImm = RichInputMethodManager
         mRichImm!!.setSubtypeChangeHandler(this)
         KeyboardSwitcher.init(this)
         AudioAndHapticFeedbackManager.init(this)
@@ -316,7 +316,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
         val inputAttributes = InputAttributes(editorInfo, isFullscreenMode)
         mSettings.loadSettings(inputAttributes)
         val currentSettingsValues: SettingsValues? = mSettings.current
-        AudioAndHapticFeedbackManager.instance
+        AudioAndHapticFeedbackManager
             .onSettingsChanged(currentSettingsValues)
     }
 
@@ -887,7 +887,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
             }
         }
         val feedbackManager: AudioAndHapticFeedbackManager =
-            AudioAndHapticFeedbackManager.instance
+            AudioAndHapticFeedbackManager
         if (repeatCount == 0) {
             // TODO: Reconsider how to perform haptic feedback when repeating key.
             feedbackManager.performHapticFeedback(keyboardView)
@@ -922,7 +922,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
         override fun onReceive(context: Context, intent: Intent) {
             val action: String? = intent.action
             if (action == AudioManager.RINGER_MODE_CHANGED_ACTION) {
-                AudioAndHapticFeedbackManager.instance.onRingerModeChanged()
+                AudioAndHapticFeedbackManager.onRingerModeChanged()
             }
         }
     }

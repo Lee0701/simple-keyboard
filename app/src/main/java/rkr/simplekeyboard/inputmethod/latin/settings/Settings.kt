@@ -112,7 +112,7 @@ object Settings : OnSharedPreferenceChangeListener {
         res: Resources
     ): Boolean {
         val hasVibrator: Boolean =
-            AudioAndHapticFeedbackManager.instance.hasVibrator()
+            AudioAndHapticFeedbackManager.hasVibrator()
         return hasVibrator && prefs.getBoolean(
             PREF_VIBRATE_ON,
             res.getBoolean(R.bool.config_default_vibration_enabled)

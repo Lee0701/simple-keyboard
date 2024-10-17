@@ -40,7 +40,7 @@ class SingleLanguageSettingsFragment : PreferenceFragment() {
         super.onCreate(icicle)
 
         RichInputMethodManager.init(activity)
-        mRichImm = RichInputMethodManager.instance
+        mRichImm = RichInputMethodManager
         addPreferencesFromResource(R.xml.empty_settings)
     }
 

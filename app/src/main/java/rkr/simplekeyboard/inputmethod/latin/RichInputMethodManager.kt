@@ -51,7 +51,7 @@ import java.util.concurrent.Executors
  * Enrichment class for InputMethodManager to simplify interaction and add functionality.
  */
 // non final for easy mocking.
-class RichInputMethodManager private constructor() {
+object RichInputMethodManager {
     private var mImmService: InputMethodManager? = null
 
     private var mSubtypeList: SubtypeList? = null
@@ -67,7 +67,7 @@ class RichInputMethodManager private constructor() {
         }
     }
 
-    private fun initInternal(context: Context) {
+    fun init(context: Context) {
         if (isInitialized) {
             return
         }
@@ -751,19 +751,5 @@ class RichInputMethodManager private constructor() {
         })
     }
 
-    companion object {
-        private val TAG: String = RichInputMethodManager::class.java.getSimpleName()
-
-        private val sInstance: RichInputMethodManager = RichInputMethodManager()
-
-        val instance: RichInputMethodManager
-            get() {
-                sInstance.checkInitialized()
-                return sInstance
-            }
-
-        fun init(context: Context) {
-            sInstance.initInternal(context)
-        }
-    }
+    private val TAG: String = RichInputMethodManager::class.java.getSimpleName()
 }
