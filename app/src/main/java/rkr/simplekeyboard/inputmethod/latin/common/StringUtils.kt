@@ -258,9 +258,9 @@ object StringUtils {
     fun toTitleCaseOfKeyLabel(
         label: String?,
         locale: Locale
-    ): String {
+    ): String? {
         if (label == null) {
-            return label!!
+            return label
         }
         return label.uppercase(getLocaleUsedForToTitleCase(locale))
     }
@@ -271,7 +271,7 @@ object StringUtils {
         }
         val label = newSingleCodePointString(code)
         val titleCaseLabel = toTitleCaseOfKeyLabel(label, locale)
-        return if (codePointCount(titleCaseLabel) == 1)
+        return if (titleCaseLabel != null && codePointCount(titleCaseLabel) == 1)
             titleCaseLabel.codePointAt(0)
         else
             Constants.CODE_UNSPECIFIED

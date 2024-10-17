@@ -755,7 +755,7 @@ class PointerTracker private constructor(id: Int) : PointerTrackerQueue.Element 
         if (distanceFromKeyEdgeSquared >= keyHysteresisDistanceSquared) {
             if (DEBUG_MODE) {
                 val distanceToEdgeRatio: Float =
-                    (sqrt(distanceFromKeyEdgeSquared.toDouble()) as Float
+                    (sqrt(distanceFromKeyEdgeSquared.toDouble()).toFloat()
                             / (mKeyboard!!.mMostCommonKeyWidth + mKeyboard!!.mHorizontalGap))
                 Log.d(
                     TAG, String.format(
@@ -771,7 +771,7 @@ class PointerTracker private constructor(id: Int) : PointerTrackerQueue.Element 
                 val keyDiagonal: Float = hypot(
                     (mKeyboard!!.mMostCommonKeyWidth + mKeyboard!!.mHorizontalGap).toDouble(),
                     (mKeyboard!!.mMostCommonKeyHeight + mKeyboard!!.mVerticalGap).toDouble()
-                ) as Float
+                ).toFloat()
                 val lengthFromDownRatio: Float =
                     mBogusMoveEventDetector.accumulatedDistanceFromDownKey / keyDiagonal
                 Log.d(
@@ -959,7 +959,7 @@ class PointerTracker private constructor(id: Int) : PointerTrackerQueue.Element 
         }
 
         private fun getDistance(x1: Int, y1: Int, x2: Int, y2: Int): Int {
-            return hypot((x1 - x2).toDouble(), (y1 - y2).toDouble()) as Int
+            return hypot((x1 - x2).toDouble(), (y1 - y2).toDouble()).toInt()
         }
 
         val activePointerTrackerCount: Int

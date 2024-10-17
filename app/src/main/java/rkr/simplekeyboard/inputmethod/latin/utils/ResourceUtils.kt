@@ -202,7 +202,7 @@ object ResourceUtils {
         return max(
             min(keyboardHeight.toDouble(), maxKeyboardHeight.toDouble()),
             minKeyboardHeight.toDouble()
-        ) as Int
+        ).toInt()
     }
 
     fun getKeyboardBottomOffset(
@@ -311,7 +311,7 @@ object ResourceUtils {
         var bright = false
         val rgb = intArrayOf(Color.red(color), Color.green(color), Color.blue(color))
         val brightness =
-            sqrt(rgb[0] * rgb[0] * .241 + rgb[1] * rgb[1] * .691 + rgb[2] * rgb[2] * .068) as Int
+            sqrt(rgb[0] * rgb[0] * .241 + rgb[1] * rgb[1] * .691 + rgb[2] * rgb[2] * .068).toInt()
         if (brightness >= 210) {
             bright = true
         }

@@ -104,9 +104,7 @@ class KeyboardLayoutSet internal constructor(context: Context, params: Params) {
             else -> keyboardLayoutSetElementId = baseKeyboardLayoutSetElementId
         }
 
-        var elementParams: ElementParams = mParams.mKeyboardLayoutSetElementIdToParamsMap.get(
-            keyboardLayoutSetElementId
-        )
+        var elementParams = mParams.mKeyboardLayoutSetElementIdToParamsMap[keyboardLayoutSetElementId]
         if (elementParams == null) {
             elementParams = mParams.mKeyboardLayoutSetElementIdToParamsMap.get(
                 KeyboardId.ELEMENT_ALPHABET

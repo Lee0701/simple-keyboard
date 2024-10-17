@@ -312,8 +312,8 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
 
     private fun loadSettings() {
         currentLayoutLocale = mRichImm?.currentSubtype?.localeObject
-        val editorInfo: EditorInfo = currentInputEditorInfo
-        val inputAttributes: InputAttributes = InputAttributes(editorInfo, isFullscreenMode)
+        val editorInfo = currentInputEditorInfo
+        val inputAttributes = InputAttributes(editorInfo, isFullscreenMode)
         mSettings.loadSettings(inputAttributes)
         val currentSettingsValues: SettingsValues? = mSettings.current
         AudioAndHapticFeedbackManager.instance

@@ -363,6 +363,7 @@ object SubtypeLocaleUtils {
                     return mSubtypes
                 }
                 mSubtypes = ArrayList()
+                this.mSubtypes = mSubtypes
                 // This should call to build all of the available for each supported locale. The private
                 // helper functions will handle skipping building the subtypes that weren't requested.
                 // The first subtype that is specified to be built here for each locale will be
@@ -472,7 +473,6 @@ object SubtypeLocaleUtils {
                     LOCALE_THAI -> addLayout(LAYOUT_THAI)
                     LOCALE_URDU -> addLayout(LAYOUT_URDU)
                 }
-                this.mSubtypes = mSubtypes
                 return mSubtypes
             }
 
