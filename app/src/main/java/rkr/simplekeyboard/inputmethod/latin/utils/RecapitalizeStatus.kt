@@ -27,14 +27,14 @@ class RecapitalizeStatus {
      * action was done, and the location of the cursor and the string that was there after.
      */
     private var mCursorStartBefore = 0
-    private var mStringBefore: String? = null
+    private var mStringBefore: String = ""
     var newCursorStart: Int = 0
         private set
     var newCursorEnd: Int = 0
         private set
     private var mRotationStyleCurrentIndex = 0
     private var mSkipOriginalMixedCaseMode = false
-    private var mLocale: Locale? = null
+    private var mLocale: Locale = Locale.getDefault()
     var recapitalizedString: String? = null
         private set
     var isStarted: Boolean = false
@@ -47,7 +47,7 @@ class RecapitalizeStatus {
         stop()
     }
 
-    fun start(cursorStart: Int, cursorEnd: Int, string: String?, locale: Locale?) {
+    fun start(cursorStart: Int, cursorEnd: Int, string: String, locale: Locale) {
         if (!mIsEnabled) {
             return
         }
@@ -56,7 +56,7 @@ class RecapitalizeStatus {
         newCursorStart = cursorStart
         newCursorEnd = cursorEnd
         recapitalizedString = string
-        val initialMode = getStringMode(mStringBefore!!)
+        val initialMode = getStringMode(mStringBefore)
         mLocale = locale
         if (CAPS_MODE_ORIGINAL_MIXED_CASE == initialMode) {
             mRotationStyleCurrentIndex = 0
@@ -113,42 +113,42 @@ class RecapitalizeStatus {
             ++count
             when (ROTATION_STYLE[mRotationStyleCurrentIndex]) {
                 CAPS_MODE_ORIGINAL_MIXED_CASE -> recapitalizedString = mStringBefore
-                CAPS_MODE_ALL_LOWER -> recapitalizedString = mStringBefore!!.lowercase(
-                    mLocale!!
+                CAPS_MODE_ALL_LOWER -> recapitalizedString = mStringBefore.lowercase(
+                    mLocale
                 )
 
                 CAPS_MODE_FIRST_WORD_UPPER -> recapitalizedString = StringUtils.capitalizeEachWord(
-                    mStringBefore!!, mLocale!!
+                    mStringBefore, mLocale
                 )
 
-                CAPS_MODE_ALL_UPPER -> recapitalizedString = mStringBefore!!.uppercase(
-                    mLocale!!
+                CAPS_MODE_ALL_UPPER -> recapitalizedString = mStringBefore.uppercase(
+                    mLocale
                 )
 
                 else -> recapitalizedString = mStringBefore
             }
         } while (recapitalizedString == oldResult && count < ROTATION_STYLE.size + 1)
-        newCursorEnd = newCursorStart + recapitalizedString!!.length
+        newCursorEnd = newCursorStart + recapitalizedString.orEmpty().length
     }
 
     /**
      * Remove leading/trailing whitespace from the considered string.
      */
     fun trim() {
-        val len = mStringBefore!!.length
+        val len = mStringBefore.length
         var nonWhitespaceStart = 0
         while (nonWhitespaceStart < len
         ) {
-            val codePoint = mStringBefore!!.codePointAt(nonWhitespaceStart)
+            val codePoint = mStringBefore.codePointAt(nonWhitespaceStart)
             if (!Character.isWhitespace(codePoint)) break
-            nonWhitespaceStart = mStringBefore!!.offsetByCodePoints(nonWhitespaceStart, 1)
+            nonWhitespaceStart = mStringBefore.offsetByCodePoints(nonWhitespaceStart, 1)
         }
         var nonWhitespaceEnd = len
         while (nonWhitespaceEnd > 0
         ) {
-            val codePoint = mStringBefore!!.codePointBefore(nonWhitespaceEnd)
+            val codePoint = mStringBefore.codePointBefore(nonWhitespaceEnd)
             if (!Character.isWhitespace(codePoint)) break
-            nonWhitespaceEnd = mStringBefore!!.offsetByCodePoints(nonWhitespaceEnd, -1)
+            nonWhitespaceEnd = mStringBefore.offsetByCodePoints(nonWhitespaceEnd, -1)
         }
         // If nonWhitespaceStart >= nonWhitespaceEnd, that means the selection contained only
         // whitespace, so we leave it as is.
@@ -159,7 +159,7 @@ class RecapitalizeStatus {
             newCursorStart = mCursorStartBefore + nonWhitespaceStart
             mCursorStartBefore = newCursorStart
             mStringBefore =
-                mStringBefore!!.substring(nonWhitespaceStart, nonWhitespaceEnd)
+                mStringBefore.substring(nonWhitespaceStart, nonWhitespaceEnd)
             recapitalizedString = mStringBefore
         }
     }

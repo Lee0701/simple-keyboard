@@ -42,11 +42,10 @@ object LocaleUtils {
      * @param localeString a string specification of a locale, in a format of "ll_cc_variant" where
      * "ll" is a language code, "cc" is a country code.
      */
-    fun constructLocaleFromString(localeString: String): Locale? {
+    fun constructLocaleFromString(localeString: String): Locale {
         synchronized(sLocaleCache) {
-            if (sLocaleCache.containsKey(localeString)) {
-                return sLocaleCache[localeString]
-            }
+            val cached = sLocaleCache[localeString]
+            if (cached != null) return cached
             val elements = localeString.split("_".toRegex(), limit = 3).toTypedArray()
             val locale = if (elements.size == 1) {
                 Locale(elements[0] /* language */)

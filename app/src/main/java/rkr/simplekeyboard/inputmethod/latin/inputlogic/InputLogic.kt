@@ -31,6 +31,7 @@ import rkr.simplekeyboard.inputmethod.latin.settings.SettingsValues
 import rkr.simplekeyboard.inputmethod.latin.utils.InputTypeUtils
 import rkr.simplekeyboard.inputmethod.latin.utils.RecapitalizeStatus
 import rkr.simplekeyboard.inputmethod.latin.utils.SubtypeLocaleUtils
+import java.util.Locale
 import java.util.TreeSet
 
 /**
@@ -327,7 +328,7 @@ class InputLogic(latinIME: LatinIME) {
                 selectionStart,
                 selectionEnd,
                 selectedText.toString(),
-                mLatinIME.currentLayoutLocale
+                mLatinIME.currentLayoutLocale ?: Locale.getDefault()
             )
             // We trim leading and trailing whitespace.
             mRecapitalizeStatus.trim()

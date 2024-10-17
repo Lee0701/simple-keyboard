@@ -28,12 +28,12 @@ import kotlin.concurrent.Volatile
  */
 object LocaleResourceUtils {
     // This reference class {@link R} must be located in the same package as LatinIME.java.
-    private val RESOURCE_PACKAGE_NAME: String = R::class.java.getPackage().name
+    private val RESOURCE_PACKAGE_NAME: String = R::class.java.getPackage()!!.name
 
     @Volatile
     private var sInitialized = false
     private val sInitializeLock = Any()
-    private var sResources: Resources? = null
+    private lateinit var sResources: Resources
 
     // Exceptional locale whose name should be displayed in Locale.ROOT.
     private val sExceptionalLocaleDisplayedInRootLocale = HashMap<String?, Int>()
@@ -47,7 +47,7 @@ object LocaleResourceUtils {
     // Note that this initialization method can be called multiple times.
     fun init(context: Context) {
         synchronized(sInitializeLock) {
-            if (sInitialized == false) {
+            if (!sInitialized) {
                 initLocked(context)
                 sInitialized = true
             }
@@ -77,7 +77,7 @@ object LocaleResourceUtils {
         }
     }
 
-    private fun getDisplayLocale(localeString: String): Locale? {
+    private fun getDisplayLocale(localeString: String): Locale {
         if (sExceptionalLocaleDisplayedInRootLocale.containsKey(localeString)) {
             return Locale.ROOT
         }
@@ -93,7 +93,7 @@ object LocaleResourceUtils {
     fun getLocaleDisplayNameInSystemLocale(
         localeString: String
     ): String {
-        val displayLocale = sResources!!.configuration.locale
+        val displayLocale = sResources.configuration.locale
         return getLocaleDisplayNameInternal(localeString, displayLocale)
     }
 
@@ -103,9 +103,9 @@ object LocaleResourceUtils {
      * @param localeString the locale to display.
      * @return the full display name of the locale.
      */
-    fun getLocaleDisplayNameInLocale(localeString: String?): String {
-        val displayLocale = getDisplayLocale(localeString!!)
-        return getLocaleDisplayNameInternal(localeString, displayLocale!!)
+    fun getLocaleDisplayNameInLocale(localeString: String): String {
+        val displayLocale = getDisplayLocale(localeString)
+        return getLocaleDisplayNameInternal(localeString, displayLocale)
     }
 
     /**
@@ -117,18 +117,15 @@ object LocaleResourceUtils {
     fun getLanguageDisplayNameInSystemLocale(
         localeString: String
     ): String {
-        val displayLocale = sResources!!.configuration.locale
-        val languageString = if (sExceptionalLocaleDisplayedInRootLocale.containsKey(
+        val displayLocale = sResources.configuration.locale
+        val languageString =
+            if (sExceptionalLocaleDisplayedInRootLocale.containsKey(localeString)) {
                 localeString
-            )
-        ) {
-            localeString
-        } else {
-            LocaleUtils.constructLocaleFromString(
-                localeString
-            )!!
-                .language
-        }
+            } else {
+                LocaleUtils.constructLocaleFromString(
+                    localeString
+                ).language
+            }
         return getLocaleDisplayNameInternal(languageString, displayLocale)
     }
 
@@ -138,8 +135,8 @@ object LocaleResourceUtils {
      * @param localeString the locale to display.
      * @return the display name of the language.
      */
-    fun getLanguageDisplayNameInLocale(localeString: String?): String {
-        val displayLocale = getDisplayLocale(localeString!!)
+    fun getLanguageDisplayNameInLocale(localeString: String): String {
+        val displayLocale = getDisplayLocale(localeString)
         val languageString = if (sExceptionalLocaleDisplayedInRootLocale.containsKey(
                 localeString
             )
@@ -148,9 +145,9 @@ object LocaleResourceUtils {
         } else {
             LocaleUtils.constructLocaleFromString(
                 localeString
-            )!!.language
+            ).language
         }
-        return getLocaleDisplayNameInternal(languageString!!, displayLocale!!)
+        return getLocaleDisplayNameInternal(languageString, displayLocale)
     }
 
     private fun getLocaleDisplayNameInternal(
@@ -167,11 +164,11 @@ object LocaleResourceUtils {
             null
         }
         val displayName = if (exceptionalNameResId != null) {
-            sResources!!.getString(exceptionalNameResId)
+            sResources.getString(exceptionalNameResId)
         } else {
             LocaleUtils.constructLocaleFromString(
                 localeString
-            )!!.getDisplayName(displayLocale)
+            ).getDisplayName(displayLocale)
         }
         return StringUtils.capitalizeFirstCodePoint(displayName, displayLocale)
     }
