@@ -378,7 +378,28 @@ class InputLogic(latinIME: LatinIME) {
 
     private fun layoutUsesAutoCaps(layoutSetName: String): Boolean {
         return when (layoutSetName) {
-            SubtypeLocaleUtils.LAYOUT_ARABIC, SubtypeLocaleUtils.LAYOUT_BENGALI, SubtypeLocaleUtils.LAYOUT_BENGALI_AKKHOR, SubtypeLocaleUtils.LAYOUT_BENGALI_UNIJOY, SubtypeLocaleUtils.LAYOUT_FARSI, SubtypeLocaleUtils.LAYOUT_GEORGIAN, SubtypeLocaleUtils.LAYOUT_HEBREW, SubtypeLocaleUtils.LAYOUT_HINDI, SubtypeLocaleUtils.LAYOUT_HINDI_COMPACT, SubtypeLocaleUtils.LAYOUT_KANNADA, SubtypeLocaleUtils.LAYOUT_KHMER, SubtypeLocaleUtils.LAYOUT_LAO, SubtypeLocaleUtils.LAYOUT_MALAYALAM, SubtypeLocaleUtils.LAYOUT_MARATHI, SubtypeLocaleUtils.LAYOUT_NEPALI_ROMANIZED, SubtypeLocaleUtils.LAYOUT_NEPALI_TRADITIONAL, SubtypeLocaleUtils.LAYOUT_TAMIL, SubtypeLocaleUtils.LAYOUT_TELUGU, SubtypeLocaleUtils.LAYOUT_THAI, SubtypeLocaleUtils.LAYOUT_URDU -> false
+            SubtypeLocaleUtils.LAYOUT_ARABIC,
+            SubtypeLocaleUtils.LAYOUT_BENGALI,
+            SubtypeLocaleUtils.LAYOUT_BENGALI_AKKHOR,
+            SubtypeLocaleUtils.LAYOUT_BENGALI_UNIJOY,
+            SubtypeLocaleUtils.LAYOUT_FARSI,
+            SubtypeLocaleUtils.LAYOUT_GEORGIAN,
+            SubtypeLocaleUtils.LAYOUT_HANGUL_KS,
+            SubtypeLocaleUtils.LAYOUT_HEBREW,
+            SubtypeLocaleUtils.LAYOUT_HINDI,
+            SubtypeLocaleUtils.LAYOUT_HINDI_COMPACT,
+            SubtypeLocaleUtils.LAYOUT_KANNADA,
+            SubtypeLocaleUtils.LAYOUT_KHMER,
+            SubtypeLocaleUtils.LAYOUT_LAO,
+            SubtypeLocaleUtils.LAYOUT_MALAYALAM,
+            SubtypeLocaleUtils.LAYOUT_MARATHI,
+            SubtypeLocaleUtils.LAYOUT_NEPALI_ROMANIZED,
+            SubtypeLocaleUtils.LAYOUT_NEPALI_TRADITIONAL,
+            SubtypeLocaleUtils.LAYOUT_TAMIL,
+            SubtypeLocaleUtils.LAYOUT_TELUGU,
+            SubtypeLocaleUtils.LAYOUT_THAI,
+            SubtypeLocaleUtils.LAYOUT_URDU
+                -> false
             else -> true
         }
     }

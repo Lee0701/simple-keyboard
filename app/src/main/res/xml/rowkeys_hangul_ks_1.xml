@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='utf-8'?>
+<merge xmlns:latin="http://schemas.android.com/apk/res-auto">
+  <switch>
+    <case latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLocked">
+      <Key latin:keySpec="ㅃ"/>
+    </case>
+    <default>
+      <Key latin:keySpec="ㅂ"/>
+    </default>
+  </switch>
+  <switch>
+    <case latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLocked">
+      <Key latin:keySpec="ㅉ"/>
+    </case>
+    <default>
+      <Key latin:keySpec="ㅈ"/>
+    </default>
+  </switch>
+  <switch>
+    <case latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLocked">
+      <Key latin:keySpec="ㄸ"/>
+    </case>
+    <default>
+      <Key latin:keySpec="ㄷ"/>
+    </default>
+  </switch>
+  <switch>
+    <case latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLocked">
+      <Key latin:keySpec="ㄲ"/>
+    </case>
+    <default>
+      <Key latin:keySpec="ㄱ"/>
+    </default>
+  </switch>
+  <switch>
+    <case latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLocked">
+      <Key latin:keySpec="ㅆ"/>
+    </case>
+    <default>
+      <Key latin:keySpec="ㅅ"/>
+    </default>
+  </switch>
+  <Key latin:keySpec="ㅛ"/>
+  <Key latin:keySpec="ㅕ"/>
+  <Key latin:keySpec="ㅑ"/>
+  <switch>
+    <case latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLocked">
+      <Key latin:keySpec="ㅒ"/>
+    </case>
+    <default>
+      <Key latin:keySpec="ㅐ"/>
+    </default>
+  </switch>
+  <switch>
+    <case latin:keyboardLayoutSetElement="alphabetManualShifted|alphabetShiftLocked">
+      <Key latin:keySpec="ㅖ"/>
+    </case>
+    <default>
+      <Key latin:keySpec="ㅔ"/>
+    </default>
+  </switch>
+</merge>

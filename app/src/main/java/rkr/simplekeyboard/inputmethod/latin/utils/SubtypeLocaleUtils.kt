@@ -71,6 +71,7 @@ object SubtypeLocaleUtils {
     private const val LOCALE_KAZAKH = "kk"
     private const val LOCALE_KHMER_CAMBODIA = "km_KH"
     private const val LOCALE_KANNADA_INDIA = "kn_IN"
+    private const val LOCALE_KOREAN = "ko"
     private const val LOCALE_KYRGYZ = "ky"
     private const val LOCALE_LAO_LAOS = "lo_LA"
     private const val LOCALE_LITHUANIAN = "lt"
@@ -149,6 +150,7 @@ object SubtypeLocaleUtils {
         LOCALE_KAZAKH,
         LOCALE_KHMER_CAMBODIA,
         LOCALE_KANNADA_INDIA,
+        LOCALE_KOREAN,
         LOCALE_KYRGYZ,
         LOCALE_LAO_LAOS,
         LOCALE_LITHUANIAN,
@@ -206,6 +208,7 @@ object SubtypeLocaleUtils {
     const val LAYOUT_FARSI: String = "farsi"
     const val LAYOUT_GEORGIAN: String = "georgian"
     const val LAYOUT_GREEK: String = "greek"
+    const val LAYOUT_HANGUL_KS: String = "hangul_ks"
     const val LAYOUT_HEBREW: String = "hebrew"
     const val LAYOUT_HINDI: String = "hindi"
     const val LAYOUT_HINDI_COMPACT: String = "hindi_compact"
@@ -473,6 +476,10 @@ object SubtypeLocaleUtils {
                     LOCALE_TELUGU_INDIA -> addLayout(LAYOUT_TELUGU)
                     LOCALE_THAI -> addLayout(LAYOUT_THAI)
                     LOCALE_URDU -> addLayout(LAYOUT_URDU)
+
+                    LOCALE_KOREAN -> {
+                        addLayout(LAYOUT_HANGUL_KS)
+                    }
                 }
                 return mSubtypes
             }
