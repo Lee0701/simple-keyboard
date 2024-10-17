@@ -928,7 +928,7 @@ class LatinIME : InputMethodService(), KeyboardActionListener, SubtypeChangedLis
     }
 
     init {
-        mSettings = Settings.instance
+        mSettings = Settings
         mKeyboardSwitcher = KeyboardSwitcher.instance
     }
 

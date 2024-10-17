@@ -139,7 +139,7 @@ class KeyboardSwitcher private constructor() : SwitchActions {
         keyboardId: Int,
         toggleState: KeyboardSwitchState
     ) {
-        val currentSettingsValues: SettingsValues? = Settings.instance.current
+        val currentSettingsValues: SettingsValues? = Settings.current
         setMainKeyboardFrame(currentSettingsValues!!, toggleState)
         // TODO: pass this object to setKeyboard instead of getting the current values.
         val keyboardView: MainKeyboardView? = mainKeyboardView

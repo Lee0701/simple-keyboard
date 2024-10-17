@@ -544,12 +544,12 @@ class PointerTracker private constructor(id: Int) : PointerTrackerQueue.Element 
     private fun onMoveEventInternal(x: Int, y: Int, eventTime: Long) {
         val oldKey: Key? = key
 
-        if (oldKey != null && oldKey.code == Constants.CODE_SPACE && Settings.instance
+        if (oldKey != null && oldKey.code == Constants.CODE_SPACE && Settings
                 .current?.mSpaceSwipeEnabled == true
         ) {
             //Pointer slider
             val steps: Int = (x - mStartX) / sPointerStep
-            val swipeIgnoreTime: Int = Settings.instance
+            val swipeIgnoreTime: Int = Settings
                 .current!!.mKeyLongpressTimeout / MULTIPLIER_FOR_LONG_PRESS_TIMEOUT_IN_SLIDING_INPUT
             if (steps != 0 && mStartTime + swipeIgnoreTime < System.currentTimeMillis()) {
                 mCursorMoved = true
@@ -559,7 +559,7 @@ class PointerTracker private constructor(id: Int) : PointerTrackerQueue.Element 
             return
         }
 
-        if (oldKey != null && oldKey.code == Constants.CODE_DELETE && Settings.instance
+        if (oldKey != null && oldKey.code == Constants.CODE_DELETE && Settings
                 .current?.mDeleteSwipeEnabled == true
         ) {
             //Delete slider
@@ -810,7 +810,7 @@ class PointerTracker private constructor(id: Int) : PointerTrackerQueue.Element 
             return sParams!!.mLongPressShiftLockTimeout
         }
         val longpressTimeout: Int =
-            Settings.instance.current!!.mKeyLongpressTimeout
+            Settings.current!!.mKeyLongpressTimeout
         if (mIsInSlidingKeyInput) {
             // We use longer timeout for sliding finger input started from the modifier key.
             return longpressTimeout * MULTIPLIER_FOR_LONG_PRESS_TIMEOUT_IN_SLIDING_INPUT

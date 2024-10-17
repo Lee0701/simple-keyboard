@@ -30,7 +30,7 @@ import rkr.simplekeyboard.inputmethod.latin.InputAttributes
 import rkr.simplekeyboard.inputmethod.latin.utils.ResourceUtils
 import java.util.concurrent.locks.ReentrantLock
 
-class Settings private constructor() : OnSharedPreferenceChangeListener {
+object Settings : OnSharedPreferenceChangeListener {
     private var mRes: Resources? = null
     private var mPrefs: SharedPreferences? = null
 
@@ -39,7 +39,7 @@ class Settings private constructor() : OnSharedPreferenceChangeListener {
         private set
     private val mSettingsValuesLock = ReentrantLock()
 
-    private fun onCreate(context: Context) {
+    fun init(context: Context) {
         mRes = context.resources
         mPrefs = PreferenceManagerCompat.getDeviceSharedPreferences(context)
         mPrefs!!.registerOnSharedPreferenceChangeListener(this)
@@ -68,223 +68,214 @@ class Settings private constructor() : OnSharedPreferenceChangeListener {
         current = SettingsValues(mPrefs!!, mRes!!, inputAttributes)
     }
 
+    private val TAG: String = Settings::class.java.simpleName
 
-    companion object {
-        private val TAG: String = Settings::class.java.simpleName
+    // Settings screens
+    const val SCREEN_THEME: String = "screen_theme"
 
-        // Settings screens
-        const val SCREEN_THEME: String = "screen_theme"
+    // In the same order as xml/prefs.xml
+    const val PREF_AUTO_CAP: String = "auto_cap"
+    const val PREF_VIBRATE_ON: String = "vibrate_on"
+    const val PREF_SOUND_ON: String = "sound_on"
+    const val PREF_POPUP_ON: String = "popup_on"
+    const val PREF_HIDE_LANGUAGE_SWITCH_KEY: String = "pref_hide_language_switch_key"
+    const val PREF_ENABLE_IME_SWITCH: String = "pref_enable_ime_switch"
+    const val PREF_ENABLED_SUBTYPES: String = "pref_enabled_subtypes"
+    const val PREF_VIBRATION_DURATION_SETTINGS: String = "pref_vibration_duration_settings"
+    const val PREF_KEYPRESS_SOUND_VOLUME: String = "pref_keypress_sound_volume"
+    const val PREF_KEY_LONGPRESS_TIMEOUT: String = "pref_key_longpress_timeout"
+    const val PREF_KEYBOARD_HEIGHT: String = "pref_keyboard_height"
+    const val PREF_BOTTOM_OFFSET_PORTRAIT: String = "pref_bottom_offset_portrait"
+    const val PREF_KEYBOARD_COLOR: String = "pref_keyboard_color"
+    const val PREF_HIDE_SPECIAL_CHARS: String = "pref_hide_special_chars"
+    const val PREF_SHOW_NUMBER_ROW: String = "pref_show_number_row"
+    const val PREF_SPACE_SWIPE: String = "pref_space_swipe"
+    const val PREF_DELETE_SWIPE: String = "pref_delete_swipe"
+    const val PREF_MATCHING_NAVBAR_COLOR: String = "pref_matching_navbar_color"
 
-        // In the same order as xml/prefs.xml
-        const val PREF_AUTO_CAP: String = "auto_cap"
-        const val PREF_VIBRATE_ON: String = "vibrate_on"
-        const val PREF_SOUND_ON: String = "sound_on"
-        const val PREF_POPUP_ON: String = "popup_on"
-        const val PREF_HIDE_LANGUAGE_SWITCH_KEY: String = "pref_hide_language_switch_key"
-        const val PREF_ENABLE_IME_SWITCH: String = "pref_enable_ime_switch"
-        const val PREF_ENABLED_SUBTYPES: String = "pref_enabled_subtypes"
-        const val PREF_VIBRATION_DURATION_SETTINGS: String = "pref_vibration_duration_settings"
-        const val PREF_KEYPRESS_SOUND_VOLUME: String = "pref_keypress_sound_volume"
-        const val PREF_KEY_LONGPRESS_TIMEOUT: String = "pref_key_longpress_timeout"
-        const val PREF_KEYBOARD_HEIGHT: String = "pref_keyboard_height"
-        const val PREF_BOTTOM_OFFSET_PORTRAIT: String = "pref_bottom_offset_portrait"
-        const val PREF_KEYBOARD_COLOR: String = "pref_keyboard_color"
-        const val PREF_HIDE_SPECIAL_CHARS: String = "pref_hide_special_chars"
-        const val PREF_SHOW_NUMBER_ROW: String = "pref_show_number_row"
-        const val PREF_SPACE_SWIPE: String = "pref_space_swipe"
-        const val PREF_DELETE_SWIPE: String = "pref_delete_swipe"
-        const val PREF_MATCHING_NAVBAR_COLOR: String = "pref_matching_navbar_color"
+    private const val UNDEFINED_PREFERENCE_VALUE_FLOAT = -1.0f
+    private const val UNDEFINED_PREFERENCE_VALUE_INT = -1
 
-        private const val UNDEFINED_PREFERENCE_VALUE_FLOAT = -1.0f
-        private const val UNDEFINED_PREFERENCE_VALUE_INT = -1
+    // Accessed from the settings interface, hence public
+    fun readKeypressSoundEnabled(
+        prefs: SharedPreferences,
+        res: Resources
+    ): Boolean {
+        return prefs.getBoolean(
+            PREF_SOUND_ON,
+            res.getBoolean(R.bool.config_default_sound_enabled)
+        )
+    }
 
-        val instance: Settings = Settings()
+    fun readVibrationEnabled(
+        prefs: SharedPreferences,
+        res: Resources
+    ): Boolean {
+        val hasVibrator: Boolean =
+            AudioAndHapticFeedbackManager.instance.hasVibrator()
+        return hasVibrator && prefs.getBoolean(
+            PREF_VIBRATE_ON,
+            res.getBoolean(R.bool.config_default_vibration_enabled)
+        )
+    }
 
-        fun init(context: Context) {
-            instance.onCreate(context)
-        }
+    fun readKeyPreviewPopupEnabled(
+        prefs: SharedPreferences,
+        res: Resources
+    ): Boolean {
+        val defaultKeyPreviewPopup = res.getBoolean(
+            R.bool.config_default_key_preview_popup
+        )
+        return prefs.getBoolean(PREF_POPUP_ON, defaultKeyPreviewPopup)
+    }
 
-        // Accessed from the settings interface, hence public
-        fun readKeypressSoundEnabled(
-            prefs: SharedPreferences,
-            res: Resources
-        ): Boolean {
-            return prefs.getBoolean(
-                PREF_SOUND_ON,
-                res.getBoolean(R.bool.config_default_sound_enabled)
-            )
-        }
+    fun readShowLanguageSwitchKey(prefs: SharedPreferences): Boolean {
+        return !prefs.getBoolean(PREF_HIDE_LANGUAGE_SWITCH_KEY, false)
+    }
 
-        fun readVibrationEnabled(
-            prefs: SharedPreferences,
-            res: Resources
-        ): Boolean {
-            val hasVibrator: Boolean =
-                AudioAndHapticFeedbackManager.instance.hasVibrator()
-            return hasVibrator && prefs.getBoolean(
-                PREF_VIBRATE_ON,
-                res.getBoolean(R.bool.config_default_vibration_enabled)
-            )
-        }
+    fun readEnableImeSwitch(prefs: SharedPreferences): Boolean {
+        return prefs.getBoolean(PREF_ENABLE_IME_SWITCH, false)
+    }
 
-        fun readKeyPreviewPopupEnabled(
-            prefs: SharedPreferences,
-            res: Resources
-        ): Boolean {
-            val defaultKeyPreviewPopup = res.getBoolean(
-                R.bool.config_default_key_preview_popup
-            )
-            return prefs.getBoolean(PREF_POPUP_ON, defaultKeyPreviewPopup)
-        }
+    fun readHideSpecialChars(prefs: SharedPreferences): Boolean {
+        return prefs.getBoolean(PREF_HIDE_SPECIAL_CHARS, false)
+    }
 
-        fun readShowLanguageSwitchKey(prefs: SharedPreferences): Boolean {
-            return !prefs.getBoolean(PREF_HIDE_LANGUAGE_SWITCH_KEY, false)
-        }
+    fun readShowNumberRow(prefs: SharedPreferences): Boolean {
+        return prefs.getBoolean(PREF_SHOW_NUMBER_ROW, false)
+    }
 
-        fun readEnableImeSwitch(prefs: SharedPreferences): Boolean {
-            return prefs.getBoolean(PREF_ENABLE_IME_SWITCH, false)
-        }
+    fun readSpaceSwipeEnabled(prefs: SharedPreferences): Boolean {
+        return prefs.getBoolean(PREF_SPACE_SWIPE, false)
+    }
 
-        fun readHideSpecialChars(prefs: SharedPreferences): Boolean {
-            return prefs.getBoolean(PREF_HIDE_SPECIAL_CHARS, false)
-        }
+    fun readDeleteSwipeEnabled(prefs: SharedPreferences): Boolean {
+        return prefs.getBoolean(PREF_DELETE_SWIPE, false)
+    }
 
-        fun readShowNumberRow(prefs: SharedPreferences): Boolean {
-            return prefs.getBoolean(PREF_SHOW_NUMBER_ROW, false)
-        }
+    fun readPrefSubtypes(prefs: SharedPreferences): String {
+        return prefs.getString(PREF_ENABLED_SUBTYPES, "")!!
+    }
 
-        fun readSpaceSwipeEnabled(prefs: SharedPreferences): Boolean {
-            return prefs.getBoolean(PREF_SPACE_SWIPE, false)
-        }
+    fun writePrefSubtypes(prefs: SharedPreferences, prefSubtypes: String?) {
+        prefs.edit().putString(PREF_ENABLED_SUBTYPES, prefSubtypes).apply()
+    }
 
-        fun readDeleteSwipeEnabled(prefs: SharedPreferences): Boolean {
-            return prefs.getBoolean(PREF_DELETE_SWIPE, false)
-        }
+    fun readKeypressSoundVolume(
+        prefs: SharedPreferences,
+        res: Resources
+    ): Float {
+        val volume = prefs.getFloat(
+            PREF_KEYPRESS_SOUND_VOLUME, UNDEFINED_PREFERENCE_VALUE_FLOAT
+        )
+        return if ((volume != UNDEFINED_PREFERENCE_VALUE_FLOAT))
+            volume
+        else
+            readDefaultKeypressSoundVolume(res)
+    }
 
-        fun readPrefSubtypes(prefs: SharedPreferences): String {
-            return prefs.getString(PREF_ENABLED_SUBTYPES, "")!!
-        }
+    // Default keypress sound volume for unknown devices.
+    // The negative value means system default.
+    private val DEFAULT_KEYPRESS_SOUND_VOLUME: String = (-1.0f).toString()
 
-        fun writePrefSubtypes(prefs: SharedPreferences, prefSubtypes: String?) {
-            prefs.edit().putString(PREF_ENABLED_SUBTYPES, prefSubtypes).apply()
-        }
+    fun readDefaultKeypressSoundVolume(res: Resources): Float {
+        return ResourceUtils.getDeviceOverrideValue(
+            res,
+            R.array.keypress_volumes,
+            DEFAULT_KEYPRESS_SOUND_VOLUME
+        )!!.toFloat()
+    }
 
-        fun readKeypressSoundVolume(
-            prefs: SharedPreferences,
-            res: Resources
-        ): Float {
-            val volume = prefs.getFloat(
-                PREF_KEYPRESS_SOUND_VOLUME, UNDEFINED_PREFERENCE_VALUE_FLOAT
-            )
-            return if ((volume != UNDEFINED_PREFERENCE_VALUE_FLOAT))
-                volume
-            else
-                readDefaultKeypressSoundVolume(res)
-        }
+    fun readKeyLongpressTimeout(
+        prefs: SharedPreferences,
+        res: Resources
+    ): Int {
+        val milliseconds = prefs.getInt(
+            PREF_KEY_LONGPRESS_TIMEOUT, UNDEFINED_PREFERENCE_VALUE_INT
+        )
+        return if ((milliseconds != UNDEFINED_PREFERENCE_VALUE_INT))
+            milliseconds
+        else
+            readDefaultKeyLongpressTimeout(res)
+    }
 
-        // Default keypress sound volume for unknown devices.
-        // The negative value means system default.
-        private val DEFAULT_KEYPRESS_SOUND_VOLUME: String = (-1.0f).toString()
+    fun readDefaultKeyLongpressTimeout(res: Resources): Int {
+        return res.getInteger(R.integer.config_default_longpress_key_timeout)
+    }
 
-        fun readDefaultKeypressSoundVolume(res: Resources): Float {
-            return ResourceUtils.getDeviceOverrideValue(
-                res,
-                R.array.keypress_volumes,
-                DEFAULT_KEYPRESS_SOUND_VOLUME
-            )!!.toFloat()
-        }
+    fun readKeypressVibrationDuration(
+        prefs: SharedPreferences,
+        res: Resources
+    ): Int {
+        val milliseconds = prefs.getInt(
+            PREF_VIBRATION_DURATION_SETTINGS, UNDEFINED_PREFERENCE_VALUE_INT
+        )
+        return if ((milliseconds != UNDEFINED_PREFERENCE_VALUE_INT))
+            milliseconds
+        else
+            readDefaultKeypressVibrationDuration(res)
+    }
 
-        fun readKeyLongpressTimeout(
-            prefs: SharedPreferences,
-            res: Resources
-        ): Int {
-            val milliseconds = prefs.getInt(
-                PREF_KEY_LONGPRESS_TIMEOUT, UNDEFINED_PREFERENCE_VALUE_INT
-            )
-            return if ((milliseconds != UNDEFINED_PREFERENCE_VALUE_INT))
-                milliseconds
-            else
-                readDefaultKeyLongpressTimeout(res)
-        }
+    // Default keypress vibration duration for unknown devices.
+    // The negative value means system default.
+    private val DEFAULT_KEYPRESS_VIBRATION_DURATION: String = (-1).toString()
 
-        fun readDefaultKeyLongpressTimeout(res: Resources): Int {
-            return res.getInteger(R.integer.config_default_longpress_key_timeout)
-        }
+    fun readDefaultKeypressVibrationDuration(res: Resources): Int {
+        return ResourceUtils.getDeviceOverrideValue(
+            res,
+            R.array.keypress_vibration_durations,
+            DEFAULT_KEYPRESS_VIBRATION_DURATION
+        )!!.toInt()
+    }
 
-        fun readKeypressVibrationDuration(
-            prefs: SharedPreferences,
-            res: Resources
-        ): Int {
-            val milliseconds = prefs.getInt(
-                PREF_VIBRATION_DURATION_SETTINGS, UNDEFINED_PREFERENCE_VALUE_INT
-            )
-            return if ((milliseconds != UNDEFINED_PREFERENCE_VALUE_INT))
-                milliseconds
-            else
-                readDefaultKeypressVibrationDuration(res)
-        }
+    fun readKeyboardHeight(
+        prefs: SharedPreferences,
+        defaultValue: Float
+    ): Float {
+        return prefs.getFloat(PREF_KEYBOARD_HEIGHT, defaultValue)
+    }
 
-        // Default keypress vibration duration for unknown devices.
-        // The negative value means system default.
-        private val DEFAULT_KEYPRESS_VIBRATION_DURATION: String = (-1).toString()
+    fun readBottomOffsetPortrait(prefs: SharedPreferences): Int {
+        return prefs.getInt(PREF_BOTTOM_OFFSET_PORTRAIT, DEFAULT_BOTTOM_OFFSET)
+    }
 
-        fun readDefaultKeypressVibrationDuration(res: Resources): Int {
-            return ResourceUtils.getDeviceOverrideValue(
-                res,
-                R.array.keypress_vibration_durations,
-                DEFAULT_KEYPRESS_VIBRATION_DURATION
-            )!!.toInt()
-        }
+    const val DEFAULT_BOTTOM_OFFSET: Int = 0
 
-        fun readKeyboardHeight(
-            prefs: SharedPreferences,
-            defaultValue: Float
-        ): Float {
-            return prefs.getFloat(PREF_KEYBOARD_HEIGHT, defaultValue)
-        }
-
-        fun readBottomOffsetPortrait(prefs: SharedPreferences): Int {
-            return prefs.getInt(PREF_BOTTOM_OFFSET_PORTRAIT, DEFAULT_BOTTOM_OFFSET)
-        }
-
-        const val DEFAULT_BOTTOM_OFFSET: Int = 0
-
-        fun readKeyboardDefaultColor(context: Context): Int {
-            val keyboardThemeColors = context.resources.getIntArray(R.array.keyboard_theme_colors)
-            val keyboardThemeIds = context.resources.getIntArray(R.array.keyboard_theme_ids)
-            val themeId: Int = KeyboardTheme.getKeyboardTheme(context)!!.mThemeId
-            for (index in keyboardThemeIds.indices) {
-                if (themeId == keyboardThemeIds[index]) {
-                    return keyboardThemeColors[index]
-                }
+    fun readKeyboardDefaultColor(context: Context): Int {
+        val keyboardThemeColors = context.resources.getIntArray(R.array.keyboard_theme_colors)
+        val keyboardThemeIds = context.resources.getIntArray(R.array.keyboard_theme_ids)
+        val themeId: Int = KeyboardTheme.getKeyboardTheme(context)!!.mThemeId
+        for (index in keyboardThemeIds.indices) {
+            if (themeId == keyboardThemeIds[index]) {
+                return keyboardThemeColors[index]
             }
-
-            return Color.LTGRAY
         }
 
-        fun readKeyboardColor(prefs: SharedPreferences, context: Context): Int {
-            return prefs.getInt(PREF_KEYBOARD_COLOR, readKeyboardDefaultColor(context))
-        }
+        return Color.LTGRAY
+    }
 
-        fun removeKeyboardColor(prefs: SharedPreferences) {
-            prefs.edit().remove(PREF_KEYBOARD_COLOR).apply()
-        }
+    fun readKeyboardColor(prefs: SharedPreferences, context: Context): Int {
+        return prefs.getInt(PREF_KEYBOARD_COLOR, readKeyboardDefaultColor(context))
+    }
 
-        fun readUseFullscreenMode(res: Resources): Boolean {
-            return res.getBoolean(R.bool.config_use_fullscreen_mode)
-        }
+    fun removeKeyboardColor(prefs: SharedPreferences) {
+        prefs.edit().remove(PREF_KEYBOARD_COLOR).apply()
+    }
 
-        fun readHasHardwareKeyboard(conf: Configuration): Boolean {
-            // The standard way of finding out whether we have a hardware keyboard. This code is taken
-            // from InputMethodService#onEvaluateInputShown, which canonically determines this.
-            // In a nutshell, we have a keyboard if the configuration says the type of hardware keyboard
-            // is NOKEYS and if it's not hidden (e.g. folded inside the device).
-            return conf.keyboard != Configuration.KEYBOARD_NOKEYS
-                    && conf.hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_YES
-        }
+    fun readUseFullscreenMode(res: Resources): Boolean {
+        return res.getBoolean(R.bool.config_use_fullscreen_mode)
+    }
 
-        fun readUseMatchingNavbarColor(prefs: SharedPreferences): Boolean {
-            return prefs.getBoolean(PREF_MATCHING_NAVBAR_COLOR, false)
-        }
+    fun readHasHardwareKeyboard(conf: Configuration): Boolean {
+        // The standard way of finding out whether we have a hardware keyboard. This code is taken
+        // from InputMethodService#onEvaluateInputShown, which canonically determines this.
+        // In a nutshell, we have a keyboard if the configuration says the type of hardware keyboard
+        // is NOKEYS and if it's not hidden (e.g. folded inside the device).
+        return conf.keyboard != Configuration.KEYBOARD_NOKEYS
+                && conf.hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_YES
+    }
+
+    fun readUseMatchingNavbarColor(prefs: SharedPreferences): Boolean {
+        return prefs.getBoolean(PREF_MATCHING_NAVBAR_COLOR, false)
     }
 }
