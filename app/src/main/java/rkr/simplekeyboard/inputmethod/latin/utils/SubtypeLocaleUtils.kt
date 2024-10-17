@@ -251,7 +251,7 @@ object SubtypeLocaleUtils {
      */
     fun getDefaultSubtype(locale: String?, resources: Resources): Subtype? {
         val subtypes: List<Subtype> = SubtypeBuilder(locale, true, resources).subtypes
-        return if (subtypes.size == 0) null else subtypes[0]
+        return if (subtypes.isEmpty()) null else subtypes[0]
     }
 
     /**
@@ -292,7 +292,8 @@ object SubtypeLocaleUtils {
             if (bestLocale != null && !addedLocales.contains(bestLocale)) {
                 addedLocales.add(bestLocale)
                 val bestLocaleString = LocaleUtils.getLocaleString(bestLocale)
-                subtypes.add(getDefaultSubtype(bestLocaleString, resources)!!)
+                val defaultSubtype = getDefaultSubtype(bestLocaleString, resources)
+                if(defaultSubtype != null) subtypes.add(defaultSubtype)
             }
         }
         if (subtypes.size == 0) {
@@ -485,7 +486,7 @@ object SubtypeLocaleUtils {
             if (mAllowMultiple) {
                 return false
             }
-            if (mSubtypes!!.size > 0) {
+            if (!mSubtypes.isNullOrEmpty()) {
                 return true
             }
             if (mExpectedLayoutSet != null) {
@@ -519,7 +520,7 @@ object SubtypeLocaleUtils {
                 layoutNameStr = null
             }
 
-            mSubtypes!!.add(
+            mSubtypes?.add(
                 Subtype(mLocale!!, keyboardLayoutSet, layoutNameStr, false, mResources)
             )
         }
@@ -535,7 +536,7 @@ object SubtypeLocaleUtils {
             if (shouldSkipLayout(keyboardLayoutSet)) {
                 return
             }
-            mSubtypes!!.add(
+            mSubtypes?.add(
                 Subtype(mLocale!!, keyboardLayoutSet, layoutRes, true, mResources)
             )
         }
@@ -545,10 +546,10 @@ object SubtypeLocaleUtils {
          * actually add all of the subtypes to the list depending on the original request.
          */
         fun addGenericLayouts() {
-            if (mSubtypes!!.size > 0 && !mAllowMultiple) {
+            if (!mSubtypes.isNullOrEmpty() && !mAllowMultiple) {
                 return
             }
-            val initialSize = mSubtypes!!.size
+            val initialSize = mSubtypes?.size ?: 0
             val predefinedKeyboardLayoutSets = mResources.getStringArray(
                 R.array.predefined_layouts
             )
@@ -563,7 +564,7 @@ object SubtypeLocaleUtils {
 
                 var alreadyExists = false
                 for (subtypeIndex in 0 until initialSize) {
-                    val layoutSet = mSubtypes!![subtypeIndex].keyboardLayoutSet
+                    val layoutSet = mSubtypes?.get(subtypeIndex)?.keyboardLayoutSet
                     if (layoutSet == predefinedLayout) {
                         alreadyExists = true
                         break
@@ -573,7 +574,7 @@ object SubtypeLocaleUtils {
                     continue
                 }
 
-                mSubtypes!!.add(
+                mSubtypes?.add(
                     Subtype(
                         mLocale!!, predefinedLayout,
                         predefinedKeyboardLayoutSetDisplayNames[i], true, mResources

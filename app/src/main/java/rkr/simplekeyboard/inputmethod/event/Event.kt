@@ -66,7 +66,6 @@ class Event private constructor(// The type of event - one of the constants abov
 
     // This method is private - to create a new event, use one of the create* utility methods.
     init {
-        mCodePoint = mCodePoint
         mKeyCode = keyCode
         mX = x
         mY = y

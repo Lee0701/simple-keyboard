@@ -53,8 +53,8 @@ class ThemeSettingsFragment : SubScreenFragment(), OnRadioButtonClickedListener 
             screen.addPreference(pref)
             pref.setOnRadioButtonClickedListener(this)
         }
-        val keyboardTheme: KeyboardTheme = KeyboardTheme.getKeyboardTheme(context)!!
-        mSelectedThemeId = keyboardTheme.mThemeId
+        val keyboardTheme = KeyboardTheme.getKeyboardTheme(context)
+        if(keyboardTheme != null) mSelectedThemeId = keyboardTheme.mThemeId
     }
 
     override fun onRadioButtonClicked(preference: RadioButtonPreference?) {
@@ -94,11 +94,11 @@ class ThemeSettingsFragment : SubScreenFragment(), OnRadioButtonClickedListener 
         fun updateKeyboardThemeSummary(pref: Preference) {
             val context = pref.context
             val res = context.resources
-            val keyboardTheme: KeyboardTheme = KeyboardTheme.getKeyboardTheme(context)!!
+            val keyboardTheme = KeyboardTheme.getKeyboardTheme(context)
             val keyboardThemeNames = res.getStringArray(R.array.keyboard_theme_names)
             val keyboardThemeIds = res.getIntArray(R.array.keyboard_theme_ids)
             for (index in keyboardThemeIds.indices) {
-                if (keyboardTheme.mThemeId == keyboardThemeIds[index]) {
+                if (keyboardTheme?.mThemeId == keyboardThemeIds[index]) {
                     pref.summary = keyboardThemeNames[index]
                     return
                 }

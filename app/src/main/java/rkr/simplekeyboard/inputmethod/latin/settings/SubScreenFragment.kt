@@ -69,13 +69,13 @@ abstract class SubScreenFragment : PreferenceFragment(), OnSharedPreferenceChang
                 BackupManager(context).dataChanged()
                 fragment.onSharedPreferenceChanged(prefs, key)
             }
-        sharedPreferences!!.registerOnSharedPreferenceChangeListener(
+        sharedPreferences.registerOnSharedPreferenceChangeListener(
             mSharedPreferenceChangeListener
         )
     }
 
     override fun onDestroy() {
-        sharedPreferences!!.unregisterOnSharedPreferenceChangeListener(
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(
             mSharedPreferenceChangeListener
         )
         super.onDestroy()

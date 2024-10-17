@@ -22,8 +22,7 @@ import java.lang.ref.WeakReference
 open class LeakGuardHandlerWrapper<T> @JvmOverloads constructor(
     ownerInstance: T,
     looper: Looper = Looper.myLooper()!!
-) :
-    Handler(looper) {
+) : Handler(looper) {
     private val mOwnerInstanceRef =
         WeakReference(ownerInstance)
 

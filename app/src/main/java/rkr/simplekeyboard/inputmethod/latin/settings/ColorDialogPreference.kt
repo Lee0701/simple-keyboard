@@ -15,6 +15,7 @@
  */
 package rkr.simplekeyboard.inputmethod.latin.settings
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -54,30 +55,34 @@ class ColorDialogPreference(context: Context?, attrs: AttributeSet?) :
 
     override fun onCreateDialogView(): View {
         val view = super.onCreateDialogView()
-        mSeekBarRed = view.findViewById<View>(R.id.seek_bar_dialog_bar_red) as SeekBar
-        mSeekBarRed!!.max = 255
-        mSeekBarRed!!.setOnSeekBarChangeListener(this)
-        mSeekBarRed!!.progressDrawable.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
-        mSeekBarRed!!.thumb.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
-        mSeekBarGreen = view.findViewById<View>(R.id.seek_bar_dialog_bar_green) as SeekBar
-        mSeekBarGreen!!.max = 255
-        mSeekBarGreen!!.setOnSeekBarChangeListener(this)
-        mSeekBarGreen!!.thumb.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
-        mSeekBarGreen!!.progressDrawable.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
-        mSeekBarBlue = view.findViewById<View>(R.id.seek_bar_dialog_bar_blue) as SeekBar
-        mSeekBarBlue!!.max = 255
-        mSeekBarBlue!!.setOnSeekBarChangeListener(this)
-        mSeekBarBlue!!.thumb.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
-        mSeekBarBlue!!.progressDrawable.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+        val mSeekBarRed = view.findViewById<View>(R.id.seek_bar_dialog_bar_red) as SeekBar
+        mSeekBarRed.max = 255
+        mSeekBarRed.setOnSeekBarChangeListener(this)
+        mSeekBarRed.progressDrawable.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+        mSeekBarRed.thumb.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+        val mSeekBarGreen = view.findViewById<View>(R.id.seek_bar_dialog_bar_green) as SeekBar
+        mSeekBarGreen.max = 255
+        mSeekBarGreen.setOnSeekBarChangeListener(this)
+        mSeekBarGreen.thumb.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
+        mSeekBarGreen.progressDrawable.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
+        val mSeekBarBlue = view.findViewById<View>(R.id.seek_bar_dialog_bar_blue) as SeekBar
+        mSeekBarBlue.max = 255
+        mSeekBarBlue.setOnSeekBarChangeListener(this)
+        mSeekBarBlue.thumb.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+        mSeekBarBlue.progressDrawable.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
         mValueView = view.findViewById<View>(R.id.seek_bar_dialog_value) as TextView
+        this.mSeekBarRed = mSeekBarRed
+        this.mSeekBarGreen = mSeekBarGreen
+        this.mSeekBarBlue = mSeekBarBlue
         return view
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onBindDialogView(view: View) {
-        val color = mValueProxy!!.readValue(key)
-        mSeekBarRed!!.progress = Color.red(color)
-        mSeekBarGreen!!.progress = Color.green(color)
-        mSeekBarBlue!!.progress = Color.blue(color)
+        val color = mValueProxy?.readValue(key) ?: return
+        mSeekBarRed?.progress = Color.red(color)
+        mSeekBarGreen?.progress = Color.green(color)
+        mSeekBarBlue?.progress = Color.blue(color)
         setHeaderText(color)
     }
 
@@ -97,12 +102,12 @@ class ColorDialogPreference(context: Context?, attrs: AttributeSet?) :
                 mSeekBarGreen!!.progress,
                 mSeekBarBlue!!.progress
             )
-            mValueProxy!!.writeValue(value, key)
+            mValueProxy?.writeValue(value, key)
             return
         }
         if (which == DialogInterface.BUTTON_NEUTRAL) {
             super.onClick(dialog, which)
-            mValueProxy!!.writeDefaultValue(key)
+            mValueProxy?.writeDefaultValue(key)
             return
         }
     }
@@ -123,10 +128,10 @@ class ColorDialogPreference(context: Context?, attrs: AttributeSet?) :
     }
 
     private fun setHeaderText(color: Int) {
-        mValueView!!.text = getValueText(color)
+        mValueView?.text = getValueText(color)
         val bright = Color.red(color) + Color.green(color) + Color.blue(color) > 128 * 3
-        mValueView!!.setTextColor(if (bright) Color.BLACK else Color.WHITE)
-        mValueView!!.setBackgroundColor(color)
+        mValueView?.setTextColor(if (bright) Color.BLACK else Color.WHITE)
+        mValueView?.setBackgroundColor(color)
     }
 
     private fun getValueText(value: Int): String {
