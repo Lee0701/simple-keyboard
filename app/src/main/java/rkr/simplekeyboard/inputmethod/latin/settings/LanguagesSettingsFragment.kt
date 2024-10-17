@@ -65,7 +65,7 @@ class LanguagesSettingsFragment : PreferenceFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle
+        savedInstanceState: Bundle?
     ): View? {
         mView = super.onCreateView(inflater, container, savedInstanceState)
         return mView
